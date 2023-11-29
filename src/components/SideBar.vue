@@ -1,22 +1,43 @@
 <template>
-    <v-navigation-drawer
-        expand-on-hover
-        rail
-      >
-        <v-list>
-          <v-list-item
+  <v-app-bar color="green-darken-1" class="flex-grow-0" app dark>
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar-title>UKF portál</v-app-bar-title>
+  </v-app-bar>
+  <v-navigation-drawer app v-model="drawer">
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title class="text-h6 text-center my-3">Prihlásený</v-list-item-title>
+        <v-list-item
             prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-            title="John Doe"
-            subtitle="jdoe22@gmail.com"
-          ></v-list-item>
-        </v-list>
+            title="Ferko Mrkvička"
+            subtitle="fmrkvicka@ukf.sk"
+        ></v-list-item>
+      </v-list-item-content>
+    </v-list-item>
+    <v-divider></v-divider>
+    <v-list dense nav>
+      <router-link v-for="item in items" :key="item.title" :to="`/${item.link}`" style="text-decoration: none; color: inherit;">
+        <v-list-item link>
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+          {{ item.title }}
+        </v-list-item>
+      </router-link>
+    </v-list>
+  </v-navigation-drawer>
+</template>
 
-        <v-divider></v-divider>
-
-        <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-folder" title="Projekty" value="projekty"></v-list-item>
-          <v-list-item prepend-icon="mdi-file-document-multiple-outline" title="Publikácie" value="publikacie"></v-list-item>
-          <v-list-item prepend-icon="mdi-chart-bar" title="Štatistiky" value="statistiky"></v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-  </template>
+<script>
+export default {
+  name: 'SideBar',
+  data: () => ({
+    drawer: true, //prepisat na false, teraz to iba debugujeme s true
+    items: [
+      { title: 'Projekty', icon: 'mdi-folder', link: '' },
+      { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publikacie' },
+      { title: 'Štatistiky', icon: 'mdi-chart-bar', link: 'statistiky' },
+    ],
+  }),
+};
+</script>

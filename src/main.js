@@ -2,9 +2,14 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
+import router from "@/router";
+import {store} from "core-js/internals/reflect-metadata";
 
 loadFonts()
+import "../node_modules/bootstrap/dist/css/bootstrap.css";
+import "../node_modules/bootstrap/dist/js/bootstrap.bundle";
+import 'bootstrap/dist/js/bootstrap.js';
 
-createApp(App)
-  .use(vuetify)
-  .mount('#app')
+import "./style.css";
+
+createApp(App).use(store).use(vuetify).use(router).mount('#app')
