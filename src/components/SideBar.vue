@@ -32,7 +32,7 @@
 export default {
   name: 'SideBar',
   data: () => ({
-    drawer: true, //prepisat na false, teraz to iba debugujeme s true
+    drawer: false, //prepisat na false, teraz to iba debugujeme s true
     items: [
       { title: 'Projekty', icon: 'mdi-folder', link: '' },
       { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publikacie' },

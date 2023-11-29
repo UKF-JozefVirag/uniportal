@@ -1,7 +1,7 @@
 <template>
   <v-container class="datatable">
     <v-row>
-      <v-col>
+      <v-col cols="11" offset="1">
         <v-table>
           <thead>
           <tr>
@@ -17,25 +17,22 @@
               v-for="item in records"
               :key="item.id"
           >
-            <td v-for="(key, value) in records" :key="key">
-              {{ key. }}
-            </td>
-<!--            <td>{{ item.id }}</td>-->
-<!--            <td>{{ item.employee_id }}</td>-->
-<!--            <td>{{ item.fakulta }}</td>-->
-<!--            <td>{{ item.katedra }}</td>-->
-<!--            <td>{{ item.priezvisko }}</td>-->
-<!--            <td>{{ item.podiel_na_sume }}</td>-->
-<!--            <td>{{ item.podiel }}</td>-->
-<!--            <td>{{ item.rok }}</td>-->
-<!--            <td>{{ item.title }}</td>-->
-<!--            <td>{{ item.project_id }}</td>-->
-<!--            <td>{{ item.grant_program_id }}</td>-->
-<!--            <td>{{ item.acronym }}</td>-->
-<!--            <td>{{ item.full_expenditures }}</td>-->
-<!--            <td>{{ item.kategoria_v_rozpocte }}</td>-->
-<!--            <td>{{ item.prijem_z_rozpoctu_veda }}</td>-->
-<!--            <td>{{ item.prijem_z_rozpoctu_TaS }}</td>-->
+            <td>{{ item.id }}</td>
+            <td>{{ item.employee_id }}</td>
+            <td>{{ item.fakulta }}</td>
+            <td>{{ item.katedra }}</td>
+            <td>{{ item.priezvisko }}</td>
+            <td>{{ item.podiel_na_sume }}</td>
+            <td>{{ item.podiel }}</td>
+            <td>{{ item.rok }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.project_id }}</td>
+            <td>{{ item.grant_program_id }}</td>
+            <td>{{ item.acronym }}</td>
+            <td>{{ item.full_expenditures }}</td>
+            <td>{{ item.kategoria_v_rozpocte }}</td>
+            <td>{{ item.prijem_z_rozpoctu_veda }}</td>
+            <td>{{ item.prijem_z_rozpoctu_TaS }}</td>
           </tr>
           </tbody>
         </v-table>
