@@ -5,7 +5,6 @@
 <script>
 import DataTable from "@/components/DataTable.vue";
 
-
 export default {
   name: "ProjektyView",
   components: {
