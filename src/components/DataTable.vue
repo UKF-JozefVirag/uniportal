@@ -1,9 +1,7 @@
 <template>
   <v-container class="datatable">
     <v-row>
-      <v-col
-          sm="2"
-          lg="3">
+      <v-col cols="3">
         <v-text-field
         v-model="search"
         label="Search"
@@ -15,10 +13,14 @@
       </v-col>
     </v-row>
       
-    <v-data-table :items="records" :search="search"></v-data-table>
+    <v-data-table 
+        :items="records" 
+        :search="search"
+        items-per-page="5"
+    ></v-data-table>
   </v-container>
 </template>
-
+npm
 <script>
 
 
