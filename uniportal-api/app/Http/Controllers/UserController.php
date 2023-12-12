@@ -16,14 +16,20 @@ class UserController extends Controller
     {
         $keygen = random_int(100000, 999999);
         $name = $request->input('meno');
-        $this->validate($request, [
-            'meno' => 'required',
-            'priezvisko' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'rola_id' => 'required',
-            'katedra_id' => 'required',
-        ]);
+        $odoslat = "";
+
+        try {
+            $this->validate($request, [
+                'meno' => 'required',
+                'priezvisko' => 'required',
+                'email' => 'required|email|regex:/^[A-Za-z0-9._%+-]+@ukf\.sk$/i|unique:users',
+                'password' => 'required',
+                'rola_id' => 'required',
+                'katedra_id' => 'required',
+            ]);
+        } catch (\Exception $e) {
+            $odoslat = $e->getMessage();
+    }
 
         $user = new User([
             'meno' => $request->input('meno'),
@@ -48,7 +54,10 @@ class UserController extends Controller
         });
 
         $user->save();
-        return response()->json(['user' => $user], 201);
+
+
+        return response()->json($odoslat, 201);
+//        return response()->json(['user' => $user], 201);
     }
 
     public function sendMail(){
