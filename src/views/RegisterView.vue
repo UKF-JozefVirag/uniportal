@@ -1,5 +1,6 @@
 <template>
     <div class="background">
+      <VerifyCodeModal ref="verifymodal" />
       <v-container class="registerCard">
         <v-row>
           <v-col 
@@ -35,9 +36,9 @@
                     label="Heslo"
                     type="password"
                 ></v-text-field>
-                <v-btn type="submit" block class="mt-2" color="success">Vytvoriť účet</v-btn>
+                <v-btn type="submit" block class="mt-2" color="success" @click="$refs.verifymodal.openDialog()" >Vytvoriť účet</v-btn>
               </v-form>
-              <p class="mt-3">
+              <p class="mt-3 text-center">
                 Už tu máš účet ?
                 <span>
                   <router-link to="/login" style="text-decoration: none;" class="text-success">
@@ -50,11 +51,13 @@
         </v-row>
       </v-container>
     </div>
+
   </template>
   
   
   <script setup>
-  
+  import VerifyCodeModal from "@/components/VerifyCodeModal.vue";
+
   </script>
   
   

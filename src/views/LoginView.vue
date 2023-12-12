@@ -31,7 +31,7 @@
 
               <v-btn type="submit" block class="mt-2" color="success">Prihlásiť sa</v-btn>
             </v-form>
-            <p class="mt-3">
+            <p class="mt-3 text-center">
               Ešte tu nemáš účet ? 
               <span>
                 <router-link to="/register" style="text-decoration: none;" class="text-success">
