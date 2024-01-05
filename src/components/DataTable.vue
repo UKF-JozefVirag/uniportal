@@ -1,26 +1,48 @@
 <template>
+
   <v-container class="datatable">
+
     <v-row>
-      <v-col cols="3">
+
+      <v-col
+          lg="4"
+          md="4"
+          sm="6"
+          offset-lg="2"
+          offset-md="2"
+          offset-sm="2">
+
         <v-text-field
-        v-model="search"
-        label="Search"
-        prepend-inner-icon="mdi-magnify"
-        single-line
-        variant="outlined"
-        hide-details
-      ></v-text-field>
+            v-model="search"
+            label="Search"
+            prepend-inner-icon="mdi-magnify"
+            single-line
+            variant="outlined"
+            hide-details
+        ></v-text-field>
+
       </v-col>
+
     </v-row>
-      
-    <v-data-table 
-        :items="records" 
-        :search="search"
-        items-per-page="5"
-    ></v-data-table>
+
+    <v-row>
+
+      <v-col >
+
+        <v-data-table
+            :items="records"
+            :search="search"
+            items-per-page="5"
+        ></v-data-table>
+
+      </v-col>
+
+    </v-row>
+
   </v-container>
+
 </template>
-npm
+
 <script>
 
 

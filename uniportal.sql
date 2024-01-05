@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2024 at 05:13 PM
+-- Generation Time: Jan 05, 2024 at 10:11 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -65,6 +65,46 @@ CREATE TABLE `grant_programs` (
   `id` int(11) NOT NULL,
   `acronym` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `grant_programs`
+--
+
+INSERT INTO `grant_programs` (`id`, `acronym`) VALUES
+(3, 'APVV'),
+(4, 'AT-SR'),
+(5, 'BGA'),
+(12, 'ESF'),
+(19, 'KEGA'),
+(23, 'Mesto Nitra'),
+(25, 'NSK'),
+(30, 'RP'),
+(38, 'VEGA'),
+(42, 'UGA'),
+(50, 'Erasmus+ Programe'),
+(95, 'H2020'),
+(99, 'OPLZ'),
+(100, 'FPU'),
+(108, 'MZV TAL'),
+(115, 'FPKNM'),
+(118, 'LITA'),
+(120, 'SAŽP'),
+(121, 'LIFE'),
+(125, 'DFF'),
+(126, 'JLR'),
+(127, 'Dunajská stratégia 2'),
+(132, 'MZV ČR'),
+(133, 'CEL'),
+(134, 'AGA'),
+(141, 'SAAM'),
+(142, 'VA'),
+(144, 'ERDF'),
+(146, 'FeNaO2'),
+(147, 'MIRRI SR'),
+(148, 'EEAGRANTS'),
+(149, 'ADMZUS'),
+(151, 'TPF-HU'),
+(152, 'MIaT MR');
 
 -- --------------------------------------------------------
 
@@ -398,7 +438,7 @@ ALTER TABLE `fakulta`
 -- AUTO_INCREMENT for table `grant_programs`
 --
 ALTER TABLE `grant_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `katedra`

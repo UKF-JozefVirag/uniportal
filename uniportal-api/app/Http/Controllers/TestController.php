@@ -6,19 +6,17 @@ use Rap2hpoutre\FastExcel\FastExcel;
 
 class TestController extends Controller
 {
-    /**
-     * @throws \OpenSpout\Common\Exception\IOException
-     * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
-     * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
-     * @throws \OpenSpout\Common\Exception\InvalidArgumentException
-     */
     public function exportExample()
     {
-        $list = collect([
-            [ 'id' => 1, 'name' => 'Jane' ],
-            [ 'id' => 2, 'name' => 'John' ],
-        ]);
+        // nacita udaje z csv a nastavi im headers (csv nema headers)
+        $headers = ['zamestnanec_id', 'podiel', 'rok', 'projekt_id', 'nazov', 'grant_program_id', 'acronym', 'priezvisko', 'katedra', 'fakulta', 'full_expenditures'];
+        $file = fopen('../../excely/employees_projects2021.csv', 'r');
+        $data = [];
+        while (($row = fgetcsv($file, 0, ';')) !== false) {
+            $data[] = array_combine($headers, $row);
+        }
 
-        (new FastExcel($list))->export('file.xlsx');
+        fclose($file);
+        return $data;
     }
 }
