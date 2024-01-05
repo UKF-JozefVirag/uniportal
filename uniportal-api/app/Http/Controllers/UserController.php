@@ -43,8 +43,7 @@ class UserController extends Controller
         ]);
 
         $content = "Dobrý deň $name.\n\nVitajte v našom systéme.\n\nPre dokončenie registrácie zadajte tento kľúč:\n\n
-        $keygen \n
-        S pozdravom,\n UKF.";
+        $keygen \n S pozdravom,\n UKF.";
 
         Mail::raw($content, function ($message) {
             $message

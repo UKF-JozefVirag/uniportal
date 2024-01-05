@@ -112,7 +112,9 @@ $app->router->group([
     require __DIR__.'/../routes/web.php';
 });
 
-// Zaregistruj poskytovateľa databázy
+
+
+// Zaregistruj poskytovatela databazy
 $app->register(Illuminate\Database\DatabaseServiceProvider::class);
 
 // Konfiguruj Presence Verifier
