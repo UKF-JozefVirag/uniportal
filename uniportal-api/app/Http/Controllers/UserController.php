@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Mail\Mailable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 class UserController extends Controller
 {
     /**
@@ -20,25 +21,21 @@ class UserController extends Controller
 
         try {
             $this->validate($request, [
-                'meno' => 'required',
-                'priezvisko' => 'required',
                 'email' => 'required|email|regex:/^[A-Za-z0-9._%+-]+@ukf\.sk$/i|unique:users',
                 'password' => 'required',
                 'rola_id' => 'required',
-                'katedra_id' => 'required',
             ]);
         } catch (\Exception $e) {
             $odoslat = $e->getMessage();
     }
 
         $user = new User([
-            'meno' => $request->input('meno'),
-            'priezvisko' => $request->input('priezvisko'),
             'email' => $request->input('email'),
             'password' => password_hash($request->input('password'), PASSWORD_BCRYPT),
             'validation_key' => $keygen,
             'rola_id' => $request->input('rola_id'),
-            'katedra_id' => $request->input('katedra_id'),
+            'updated_at' => Carbon::now()->toDateTimeString(),
+            'created_at' => Carbon::now()->toDateTimeString(),
             'verified' => 0
         ]);
 

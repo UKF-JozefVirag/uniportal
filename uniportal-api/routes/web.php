@@ -18,7 +18,6 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('/registerx', 'UserController@registerx');
-$router->get('/export', 'TestController@exportExample');
-
 $router->post('/register', 'UserController@register');
 
+$router->get('/export', 'ProjektyController@importProjekty');
