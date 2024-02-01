@@ -21,3 +21,5 @@ $router->get('/registerx', 'UserController@registerx');
 $router->post('/register', 'UserController@register');
 
 $router->get('/export', 'ProjektyController@importProjekty');
+$router->get('/projects', 'ProjektyController@getProjects');
+

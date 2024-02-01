@@ -15,7 +15,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-divider></v-divider>
-    <v-list dense nav>
+    <v-list class="sidelist">
       <router-link v-for="item in items" :key="item.title" :to="`/${item.link}`" style="text-decoration: none; color: inherit;">
         <v-list-item link>
           <v-list-item-icon>
@@ -35,18 +35,16 @@
 export default {
   name: 'SideBar',
   data: () => ({
-    drawer: false, //prepisat na false, teraz to iba debugujeme s true
+    drawer: true, //prepisat na false, teraz to iba debugujeme s true
     items: [
       { title: 'Projekty', icon: 'mdi-folder', link: '' },
       { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publikacie' },
       { title: 'Štatistiky', icon: 'mdi-chart-bar', link: 'statistiky' },
+      { title: 'Import', icon: 'mdi-import', link: 'import' },
     ],
   }),
 };
 </script>
 
 <style>
-  .sidebar {
-    position: relative;
-  }
 </style>

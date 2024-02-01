@@ -1,2 +1,4 @@
 na začiatku sme zobrali všetky súbory, kde sú údaje o projektoch za určité roky a spojili ich
 dalej sme z tohoto súboru vyňali všetky distinct values stlpcov "katedra", "fakulta", "program", "zamestnanci a ich id" a naplnili nimi tabulky v db
+
+museli sme pridať laravel cors middleware aby sme mohli vytvarať requesty z FE na BE, kedže to inak nešlo

@@ -27,12 +27,27 @@
 
     <v-row>
 
-      <v-col >
+      <v-col
+          lg="10"
+          md="10"
+          sm="10"
+          offset-lg="2"
+          offset-md="2"
+          offset-sm="2">
 
         <v-data-table
             :items="records"
             :search="search"
-            items-per-page="5"
+            items-per-page="3"
+            :loading="loading"
+            :items-per-page-options="[
+                {value: 3, title: '3'},
+                {value: 5, title: '5'},
+                {value: 10, title: '10'},
+                {value: 25, title: '25'},
+                {value: -1, title: '$vuetify.dataFooter.itemsPerPageAll'},
+            ]"
+
         ></v-data-table>
 
       </v-col>
@@ -49,257 +64,23 @@
 export default {
   components: {
   },
-
   data() {
     return {
       search: '',
-      headers:[
-        "ID",
-        "ID zamestnanca",
-        "Fakulta",
-        "Katedra",
-        "Priezvisko",
-        "Podieľ na sume",
-        "Podieľ",
-        "Rok",
-        "Názov práce",
-        "ID Projektu",
-        "ID grant programu",
-        "Akronym",
-        "Úplné výdavky",
-        "Kategória v rozpočte",
-        "Príjem z rozpočtu veda",
-        "Príjem z rozpočtu TaS"
-      ]
-,
-
-      records:
-        [
-          {
-            id: 1,
-            employee_id: 1441,
-            fakulta: "Fakulta medicíny",
-            katedra: "FM - Katedra pediatrie",
-            priezvisko: "Kováčová",
-            podiel_na_sume: 712.60,
-            podiel: 11,
-            rok: 2023,
-            title: "Inovácie v pediatrickom liečení",
-            project_id: 827,
-            grant_program_id: 3,
-            acronym: "INOPED",
-            full_expenditures: 5200,
-            kategoria_v_rozpocte: "T2",
-            prijem_z_rozpoctu_veda: 102.30,
-            prijem_z_rozpoctu_TaS: 8.00
-          },
-          {
-            id: 2,
-            employee_id: 1442,
-            fakulta: "Fakulta výtvarných umení",
-            katedra: "FVU - Katedra maľby",
-            priezvisko: "Šimko",
-            podiel_na_sume: 632.80,
-            podiel: 10,
-            rok: 2022,
-            title: "Moderné prístupy v maľbe a vizuálnom umení",
-            project_id: 828,
-            grant_program_id: 2,
-            acronym: "MODVIZ",
-            full_expenditures: 4600,
-            kategoria_v_rozpocte: "T1",
-            prijem_z_rozpoctu_veda: 95.60,
-            prijem_z_rozpoctu_TaS: 7.30
-          },
-          {
-            id: 3,
-            employee_id: 1443,
-            fakulta: "Fakulta teologická",
-            katedra: "FT - Katedra biblistiky",
-            priezvisko: "Kráľ",
-            podiel_na_sume: 521.90,
-            podiel: 8,
-            rok: 2021,
-            title: "Historický vývoj biblických interpretácií",
-            project_id: 829,
-            grant_program_id: 4,
-            acronym: "HIVYBI",
-            full_expenditures: 3900,
-            kategoria_v_rozpocte: "T3",
-            prijem_z_rozpoctu_veda: 80.00,
-            prijem_z_rozpoctu_TaS: 6.20
-          },
-          {
-            id: 4,
-            employee_id: 1441,
-            fakulta: "Fakulta medicíny",
-            katedra: "FM - Katedra pediatrie",
-            priezvisko: "Kováčová",
-            podiel_na_sume: 712.60,
-            podiel: 11,
-            rok: 2023,
-            title: "Inovácie v pediatrickom liečení",
-            project_id: 827,
-            grant_program_id: 3,
-            acronym: "INOPED",
-            full_expenditures: 5200,
-            kategoria_v_rozpocte: "T2",
-            prijem_z_rozpoctu_veda: 102.30,
-            prijem_z_rozpoctu_TaS: 8.00
-          },
-          {
-            id: 5,
-            employee_id: 1442,
-            fakulta: "Fakulta výtvarných umení",
-            katedra: "FVU - Katedra maľby",
-            priezvisko: "Šimko",
-            podiel_na_sume: 632.80,
-            podiel: 10,
-            rok: 2022,
-            title: "Moderné prístupy v maľbe a vizuálnom umení",
-            project_id: 828,
-            grant_program_id: 2,
-            acronym: "MODVIZ",
-            full_expenditures: 4600,
-            kategoria_v_rozpocte: "T1",
-            prijem_z_rozpoctu_veda: 95.60,
-            prijem_z_rozpoctu_TaS: 7.30
-          },
-          {
-            id: 6,
-            employee_id: 1443,
-            fakulta: "Fakulta teologická",
-            katedra: "FT - Katedra biblistiky",
-            priezvisko: "Kráľ",
-            podiel_na_sume: 521.90,
-            podiel: 8,
-            rok: 2021,
-            title: "Historický vývoj biblických interpretácií",
-            project_id: 829,
-            grant_program_id: 4,
-            acronym: "HIVYBI",
-            full_expenditures: 3900,
-            kategoria_v_rozpocte: "T3",
-            prijem_z_rozpoctu_veda: 80.00,
-            prijem_z_rozpoctu_TaS: 6.20
-          },
-          {id: 7,
-            employee_id: 1441,
-            fakulta: "Fakulta medicíny",
-            katedra: "FM - Katedra pediatrie",
-            priezvisko: "Kováčová",
-            podiel_na_sume: 712.60,
-            podiel: 11,
-            rok: 2023,
-            title: "Inovácie v pediatrickom liečení",
-            project_id: 827,
-            grant_program_id: 3,
-            acronym: "INOPED",
-            full_expenditures: 5200,
-            kategoria_v_rozpocte: "T2",
-            prijem_z_rozpoctu_veda: 102.30,
-            prijem_z_rozpoctu_TaS: 8.00
-          },
-          {
-            id: 8,
-            employee_id: 1442,
-            fakulta: "Fakulta výtvarných umení",
-            katedra: "FVU - Katedra maľby",
-            priezvisko: "Šimko",
-            podiel_na_sume: 632.80,
-            podiel: 10,
-            rok: 2022,
-            title: "Moderné prístupy v maľbe a vizuálnom umení",
-            project_id: 828,
-            grant_program_id: 2,
-            acronym: "MODVIZ",
-            full_expenditures: 4600,
-            kategoria_v_rozpocte: "T1",
-            prijem_z_rozpoctu_veda: 95.60,
-            prijem_z_rozpoctu_TaS: 7.30
-          },
-          {
-            id: 9,
-            employee_id: 1443,
-            fakulta: "Fakulta teologická",
-            katedra: "FT - Katedra biblistiky",
-            priezvisko: "Kráľ",
-            podiel_na_sume: 521.90,
-            podiel: 8,
-            rok: 2021,
-            title: "Historický vývoj biblických interpretácií",
-            project_id: 829,
-            grant_program_id: 4,
-            acronym: "HIVYBI",
-            full_expenditures: 3900,
-            kategoria_v_rozpocte: "T3",
-            prijem_z_rozpoctu_veda: 80.00,
-            prijem_z_rozpoctu_TaS: 6.20
-          },
-          {
-            id: 10,
-            employee_id: 1441,
-            fakulta: "Fakulta medicíny",
-            katedra: "FM - Katedra pediatrie",
-            priezvisko: "Kováčová",
-            podiel_na_sume: 712.60,
-            podiel: 11,
-            rok: 2023,
-            title: "Inovácie v pediatrickom liečení",
-            project_id: 827,
-            grant_program_id: 3,
-            acronym: "INOPED",
-            full_expenditures: 5200,
-            kategoria_v_rozpocte: "T2",
-            prijem_z_rozpoctu_veda: 102.30,
-            prijem_z_rozpoctu_TaS: 8.00
-          },
-          {
-            id: 11,
-            employee_id: 1442,
-            fakulta: "Fakulta výtvarných umení",
-            katedra: "FVU - Katedra maľby",
-            priezvisko: "Šimko",
-            podiel_na_sume: 632.80,
-            podiel: 10,
-            rok: 2022,
-            title: "Moderné prístupy v maľbe a vizuálnom umení",
-            project_id: 828,
-            grant_program_id: 2,
-            acronym: "MODVIZ",
-            full_expenditures: 4600,
-            kategoria_v_rozpocte: "T1",
-            prijem_z_rozpoctu_veda: 95.60,
-            prijem_z_rozpoctu_TaS: 7.30
-          },
-          {
-            id: 12,
-            employee_id: 1443,
-            fakulta: "Fakulta teologická",
-            katedra: "FT - Katedra biblistiky",
-            priezvisko: "Kráľ",
-            podiel_na_sume: 521.90,
-            podiel: 8,
-            rok: 2021,
-            title: "Historický vývoj biblických interpretácií",
-            project_id: 829,
-            grant_program_id: 4,
-            acronym: "HIVYBI",
-            full_expenditures: 3900,
-            kategoria_v_rozpocte: "T3",
-            prijem_z_rozpoctu_veda: 80.00,
-            prijem_z_rozpoctu_TaS: 6.20
-          }
-        ],
-      }
+      loading: false,
     }
+  },
+  props: {
+    records: {
+      type: Array,
+      required: true
+    }
+  }
 
 
 }
 </script>
 
 <style>
-.datatable {
-  margin-top: 100px;
-}
+
 </style>
