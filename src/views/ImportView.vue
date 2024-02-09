@@ -8,10 +8,11 @@
       offset-md="4"
       offset-sm="2"
     >
-        <v-form @submit.prevent style="margin-top: 200px">
-          <InputFile label="Import dotácií projektov"></InputFile>
+        <v-form @submit.prevent validate-on="submit lazy" style="margin-top: 200px; text-align: center">
+          <InputFile label="Import dotácií projektov VEGA"></InputFile>
+          <InputFile label="Import dotácií projektov KEGA"></InputFile>
+          <InputFile label="Import dotácií projektov APVV"></InputFile>
           <v-btn
-              class="me-5"
               type="submit"
           >
             Submit

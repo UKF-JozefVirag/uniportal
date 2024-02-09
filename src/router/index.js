@@ -4,7 +4,7 @@ import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import PublikacieView from "@/views/PublikacieView.vue";
 import StatistikyView from "@/views/StatistikyView.vue";
-import ImportView from "@/views/ImportView.vue";
+import ImportViewYear from "@/views/ImportViewYear";
 
 const routes = [
     {
@@ -38,7 +38,7 @@ const routes = [
     {
         path: '/import',
         name: 'import',
-        component: ImportView,
+        component: ImportViewYear,
     },
 ]
 
