@@ -40,7 +40,7 @@ export default {
       { title: 'Projekty', icon: 'mdi-folder', link: '' },
       { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publikacie' },
       { title: 'Štatistiky', icon: 'mdi-chart-bar', link: 'statistiky' },
-      { title: 'Import', icon: 'mdi-import', link: 'import' },
+      { title: 'Import', icon: 'mdi-import', link: 'importYear' },
     ],
   }),
 };

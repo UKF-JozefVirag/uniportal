@@ -1,19 +1,7 @@
-ako by mal vyzerať import view (import pre každy rok pre každu vegu kegu..)
-
-ak budeme importovať vega kega a podobne, treba na to urobiť jednu tabulku zvlášť ? 
-pretože v exceloch kega vega nie su žiadne záznamy ktoré by sa dali prepojiť s projektami, 
-čiže by to bola asi samostatná tabulka, však ?
-
 ako vytvoríme tabulku users z tabulky zamestnanci (t.j. ako ziskame ich email (ak su ludia čo maju dve mena napr)
 
 pro_rozpocet - čím ju budeme naplnať, neviem čo maju znamenať tie stlpce v tejto tabulke
 
-spytať sa na kod, či je to v pohode takto alebo to treba cez modely
-
-
-
-
-vytvoriť tabulku vega zvlašť kega zvlašť a podobne, každa ma ine polia
 
 admin si bude môcť priraďovať projekty k sebe, ak nenajde projekt vo vega napriklad tak bude vidieť 2 views
 kde si bude mocť priradiť ktory patri ku ktoremu
@@ -23,3 +11,9 @@ ked doktorand nebude mať mail, neimportujeme
 bežné kapitalove ignorujeme, do spolu zapíšeme stlpec BV čo je v každom pridelenom programe excel
 
 hlavna vec bude synchronizacia
+
+---------------------------------------------------------------------------------------------------------------------
+
+problem s importom cez FE, neviem ako na to, need help
+
+apvv v T5 má chybné údaje, screenshot - C:/Users/Jozef/Desktop/chyba v poskytnutych vyexportovaných datach excel apvv.png

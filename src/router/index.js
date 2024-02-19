@@ -5,6 +5,7 @@ import RegisterView from "@/views/RegisterView.vue";
 import PublikacieView from "@/views/PublikacieView.vue";
 import StatistikyView from "@/views/StatistikyView.vue";
 import ImportViewYear from "@/views/ImportViewYear";
+import ImportView from "@/views/ImportView";
 
 const routes = [
     {
@@ -36,9 +37,14 @@ const routes = [
         component: RegisterView,
     },
     {
-        path: '/import',
-        name: 'import',
+        path: '/importYear',
+        name: 'importYear',
         component: ImportViewYear,
+    },
+    {
+        path: '/import/:year',
+        name: 'import',
+        component: ImportView,
     },
 ]
 

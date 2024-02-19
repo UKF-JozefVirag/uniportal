@@ -2,3 +2,5 @@ na začiatku sme zobrali všetky súbory, kde sú údaje o projektoch za určit�
 dalej sme z tohoto súboru vyňali všetky distinct values stlpcov "katedra", "fakulta", "program", "zamestnanci a ich id" a naplnili nimi tabulky v db
 
 museli sme pridať laravel cors middleware aby sme mohli vytvarať requesty z FE na BE, kedže to inak nešlo
+
+opísať aj ako som vytváral kolekcie v postmanovi na api requesty

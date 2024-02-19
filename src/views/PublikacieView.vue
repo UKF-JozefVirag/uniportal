@@ -1,17 +1,104 @@
 <template>
-  <DataTable />
-  <div class="container">
-    <div class="row">
-      <div class="col-3">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius necessitatibus nostrum nulla! Adipisci atque ea eos in quisquam quos rerum sint suscipit! Ab aspernatur assumenda distinctio dolorem earum molestiae praesentium quia ratione totam voluptatibus. Accusantium amet aperiam, asperiores deserunt dicta dolore dolores doloribus ea error est labore libero necessitatibus nihil porro possimus quae quia quos rem saepe sapiente soluta tempora tempore. Aliquam atque, ducimus incidunt officia placeat porro qui! Accusamus aliquam distinctio ducimus, exercitationem fugiat impedit ipsa ipsam, iusto necessitatibus nobis quaerat, quibusdam quod tempora. A, aspernatur cumque delectus eligendi quia quibusdam reprehenderit sequi vitae. Amet, aperiam assumenda autem consequatur ea eaque earum eligendi enim esse exercitationem illum impedit modi quae sunt vitae. Accusamus aut consequatur, eum inventore iste iure libero molestiae natus necessitatibus numquam, officia pariatur perspiciatis quaerat quam quas quidem quod rem tenetur veniam voluptatibus. A aliquam aliquid amet asperiores, cum cumque deleniti dicta dolorem doloremque ducimus eius enim error esse eum explicabo impedit inventore ipsam labore laborum libero magni maiores modi natus neque nesciunt nisi nobis nulla quam quas repudiandae saepe, sapiente suscipit tempora velit vitae voluptatem voluptates. A animi at atque beatae blanditiis corporis cumque deserunt dignissimos distinctio dolore eligendi enim eos error eveniet expedita facere impedit incidunt inventore minus modi neque numquam, odit omnis perferendis quam quas quibusdam saepe sint tempora temporibus. Animi et ipsam nam nemo qui. Atque doloribus, quae. Architecto blanditiis delectus distinctio, doloribus dolorum, excepturi expedita facere laudantium quas quia soluta suscipit? Ad animi at culpa, delectus dolorum eveniet facilis harum ipsa iusto, labore laudantium minus nemo odio possimus praesentium quasi ratione repellendus unde veniam voluptatibus! Ab deleniti deserunt fuga placeat praesentium voluptatibus? Ab animi beatae commodi consequuntur corporis debitis dicta dignissimos doloribus eius eum facilis id ipsum laudantium maxime minima modi nesciunt nihil obcaecati optio perferendis praesentium rem temporibus, voluptas voluptates?
-      </div>
-    </div>
-  </div>
+
+  <v-container class="datatable" style="margin-top: 100px">
+    <v-row>
+      <v-col
+          lg="4"
+          md="4"
+          sm="6"
+          offset-lg="2"
+          offset-md="2"
+          offset-sm="2">
+        <v-text-field
+            v-model="search"
+            label="Search"
+            prepend-inner-icon="mdi-magnify"
+            single-line
+            variant="outlined"
+            hide-details
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+          lg="10"
+          md="10"
+          sm="10"
+          offset-lg="2"
+          offset-md="2"
+          offset-sm="2">
+        <v-data-table
+            :items="apiData"
+            :search="search"
+            items-per-page="3"
+            :loading="loading"
+            v-model="selected"
+            :items-per-page-options="[
+                {value: 3, title: '3'},
+                {value: 5, title: '5'},
+                {value: 10, title: '10'},
+                {value: 25, title: '25'},
+                {value: -1, title: '$vuetify.dataFooter.itemsPerPageAll'},
+            ]"
+            show-select
+            select-strategy="single"
+            return-object
+        ></v-data-table>
+        <pre>
+          {{selected}}
+        </pre>
+      </v-col>
+    </v-row>
+  </v-container>
+
+
+
+
+
+  <v-col
+      offset-lg="9"
+      offset-md="5"
+      offset-sm="5">
+    <v-btn @click="getSelectedRows"
+    >
+      Button
+    </v-btn>
+  </v-col>
 </template>
-<script setup>
 
-import DataTable from "@/components/DataTable.vue";
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "PublikacieView",
+  components: {
+  },
+  data() {
+    return {
+      apiData: [],
+      search: '',
+      loading: false,
+      selected: []
+    };
+  },
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData() {
+      try {
+        const response = await axios.get("http://localhost:8000/projects");
+        this.apiData = response.data;
+        console.log(response.data)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    
+    async getSelectedRows() {
+      console.log();
+    }
+  }
+};
 </script>
-<style scoped>
-
-</style>

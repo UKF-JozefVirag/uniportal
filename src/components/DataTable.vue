@@ -40,6 +40,7 @@
             :search="search"
             items-per-page="3"
             :loading="loading"
+            v-model="selected"
             :items-per-page-options="[
                 {value: 3, title: '3'},
                 {value: 5, title: '5'},
@@ -47,9 +48,14 @@
                 {value: 25, title: '25'},
                 {value: -1, title: '$vuetify.dataFooter.itemsPerPageAll'},
             ]"
-
+            :show-select="showSelect"
+            select-strategy="single"
+            return-object
         ></v-data-table>
 
+        <pre>
+          {{selected}}
+        </pre>
       </v-col>
 
     </v-row>
@@ -68,13 +74,19 @@ export default {
     return {
       search: '',
       loading: false,
+      selected: []
     }
   },
   props: {
     records: {
       type: Array,
       required: true
-    }
+    },
+    showSelect: {
+      type: Boolean,
+      required: true
+    },
+
   }
 
 

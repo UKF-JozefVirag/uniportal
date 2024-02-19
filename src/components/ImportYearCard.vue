@@ -1,12 +1,9 @@
 <template>
-  <v-btn
-      min-width="300"
-      min-height="150"
-      color="white"
-      variant="elevated"
-  >
-    {{ cardText }}
-  </v-btn>
+  <router-link :to="{ name: 'import', params: { 'year': cardText}}">
+    <v-btn min-width="300" min-height="150" color="white" variant="elevated">
+      {{ cardText }}
+    </v-btn>
+  </router-link>
 </template>
 
 <script>
