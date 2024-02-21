@@ -6,12 +6,19 @@ import PublikacieView from "@/views/PublikacieView.vue";
 import StatistikyView from "@/views/StatistikyView.vue";
 import ImportViewYear from "@/views/ImportViewYear";
 import ImportView from "@/views/ImportView";
+import ProjectManualSynchronizationView from "@/views/ProjectManualSynchronizationView";
 
 const routes = [
     {
         path: '/',
         name: 'projekty',
         component: ProjektyView,
+        props: true
+    },
+    {
+        path: '/projektySynchronizacia',
+        name: 'projektySynchronizacia',
+        component: ProjectManualSynchronizationView,
         props: true
     },
     {

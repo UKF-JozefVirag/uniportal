@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Common\Exception\UnsupportedTypeException;
@@ -167,6 +170,8 @@ class ProjektyController extends Controller
                 'pridelena_dotacia_bv' => $item[$keys[11]],
             ]);
         }
+
+        $this->synchronizeProjects();
         return response("Success", 200);
     }
 
@@ -198,6 +203,9 @@ class ProjektyController extends Controller
                 'pridelena_dotacia_bv' => $item[$keys[13]],
             ]);
         }
+
+        $this->synchronizeProjects();
+
         return response("Success", 200);
 
     }
@@ -379,7 +387,7 @@ class ProjektyController extends Controller
                 'komentar' => $item[$keys[20]],
             ]);
         }
-
+        $this->synchronizeProjects();
         return response("Success", 200);
     }
 
@@ -399,24 +407,112 @@ class ProjektyController extends Controller
         return $projekty;
     }
 
+    public function getProjectsVega() {
+        $projekty = DB::select('
+        SELECT
+            ppd.id,
+            pp.id_projektu AS "ID Projektu",
+            pp.nazov AS "Názov",
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Celé meno zamestnanca",
+            ppd.podiel AS "Podiel na projekte"
+        FROM pro_podiely ppd
+        LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
+        WHERE pp.typ = "VEGA"
+        ');
+        return $projekty;
+    }
+
+    public function getProjectsKega() {
+        $projekty = DB::select('
+        SELECT
+            ppd.id,
+            pp.id_projektu AS "ID Projektu",
+            pp.nazov AS "Názov",
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Celé meno zamestnanca",
+            ppd.podiel AS "Podiel na projekte"
+        FROM pro_podiely ppd
+        LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
+        WHERE pp.typ = "KEGA"
+        ');
+        return $projekty;
+    }
+
+    public function getProjectsApvv() {
+        $projekty = DB::select('
+        SELECT
+            ppd.id,
+            pp.id_projektu AS "ID Projektu",
+            pp.nazov AS "Názov",
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Celé meno zamestnanca",
+            ppd.podiel AS "Podiel na projekte"
+        FROM pro_podiely ppd
+        LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
+        WHERE pp.typ = "APVV";
+        ');
+        return $projekty;
+    }
+
+    public function getVega() {
+        $vega = DB::select('SELECT * FROM vega');
+        return $vega;
+    }
+
+    public function getKega() {
+        $kega = DB::select('SELECT * FROM kega');
+        return $kega;
+    }
+
+    public function getApvv() {
+        $apvv = DB::select('SELECT * FROM apvv');
+        return $apvv;
+    }
+
     public function synchronizeProjects() {
-        $apvvResults = DB::table('apvv')
-            ->join('pro_projekt', 'apvv.nazov', '=', 'pro_projekt.nazov')
-            ->select('*')
-            ->get();
 
-        $kegaResults = DB::table('kega')
-            ->join('pro_projekt', 'kega.nazov_projektu', '=', 'pro_projekt.nazov')
-            ->select('*')
-            ->get();
+        $vegaResults = DB::table('pro_projekt')
+            ->join('vega', 'vega.nazov_projektu', '=', 'pro_projekt.nazov')
+            ->update([
+                'pro_projekt.id_program_projekt' => DB::raw('vega.idVEGA'),
+            ]);
 
-        $vegaResults = DB::table('vega')
-            ->join('pro_projekt', 'vega.nazov_projektu', '=', 'pro_projekt.nazov')
-            ->select('*')
-            ->get();
+        $kegaResults = DB::table('pro_projekt')
+            ->join('kega', 'kega.nazov_projektu', '=', 'pro_projekt.nazov')
+            ->update([
+                'pro_projekt.id_program_projekt' => DB::raw('kega.idKEGA'),
+            ]);
 
-        return [$apvvResults, $kegaResults, $vegaResults];
+        $apvvResults = DB::table('pro_projekt')
+            ->join('apvv', 'apvv.nazov', '=', 'pro_projekt.nazov')
+            ->update([
+                'pro_projekt.id_program_projekt' => DB::raw('apvv.idAPVV'),
+            ]);
 
+        return [$vegaResults, $kegaResults, $apvvResults];
+    }
+
+    public function manualSynchronizationProjects(Request $request) {
+        $projectId = $request->get('project')[0]['id'];
+        $projectProgramId = $request->get('projectProgram');
+        // ziskanie hodnoty prveho kluca
+        $firstKeyProgram = array_key_first($projectProgramId[0]);
+        $firstKeyValueProgram = $projectProgramId[0][$firstKeyProgram];
+        // ziska nazov prveho kluca a vymaze z neho prve dve chars, ktore su vzdy "id".. aby sme vedeli, do ktoreho typu projektu zapisat id
+        $projectType = substr(array_key_first($projectProgramId[0]),2);
+
+
+        $affected = DB::table('pro_projekt')
+            ->where('typ', '=', $projectType)
+            ->update([
+                'pro_projekt.id_program_projekt' => $firstKeyValueProgram
+            ]);
+
+        return response("Success", 200);
     }
 
 }

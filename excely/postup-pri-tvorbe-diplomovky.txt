@@ -4,3 +4,6 @@ dalej sme z tohoto súboru vyňali všetky distinct values stlpcov "katedra", "f
 museli sme pridať laravel cors middleware aby sme mohli vytvarať requesty z FE na BE, kedže to inak nešlo
 
 opísať aj ako som vytváral kolekcie v postmanovi na api requesty
+
+pri vytvarani post requestu z FE na BE som dostával errory ako je na ploche screen..
+robí to vtedy, ked sa posiela request z inej domény, alebo portu kde je aplikácia hostovaná.. je to bezpečnostné opatrenie

@@ -52,10 +52,6 @@
             select-strategy="single"
             return-object
         ></v-data-table>
-
-        <pre>
-          {{selected}}
-        </pre>
       </v-col>
 
     </v-row>

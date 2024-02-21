@@ -38,6 +38,7 @@ export default {
     drawer: true, //prepisat na false, teraz to iba debugujeme s true
     items: [
       { title: 'Projekty', icon: 'mdi-folder', link: '' },
+      { title: 'Synchronizácia projektov', icon: 'mdi-sync', link: 'projektySynchronizacia' },
       { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publikacie' },
       { title: 'Štatistiky', icon: 'mdi-chart-bar', link: 'statistiky' },
       { title: 'Import', icon: 'mdi-import', link: 'importYear' },

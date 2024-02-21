@@ -1,6 +1,6 @@
 <?php
 
-/** @var \Laravel\Lumen\Routing\Router $router */
+/** @var Router $router */
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +13,8 @@
 |
 */
 
+use Laravel\Lumen\Routing\Router;
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
@@ -22,6 +24,10 @@ $router->post('/register', 'UserController@register');
 
 $router->get('/import/projects', 'ProjektyController@importProjekty');
 $router->get('/projects', 'ProjektyController@getProjects');
+$router->get('/projects/vega', 'ProjektyController@getProjectsVega');
+$router->get('/projects/kega', 'ProjektyController@getProjectsKega');
+$router->get('/projects/apvv', 'ProjektyController@getProjectsApvv');
+
 
 $router->get('/vega', 'ProjektyController@getVega');
 $router->get('/import/vega', 'ProjektyController@importVega');
@@ -33,5 +39,8 @@ $router->get('/apvv', 'ProjektyController@getApvv');
 $router->get('/import/apvv', 'ProjektyController@importApvv');
 
 $router->get('/import/synchronize', 'ProjektyController@synchronizeProjects');
+
+
+$router->post('/import/synchronize/manual', 'ProjektyController@manualSynchronizationProjects');
 
 
