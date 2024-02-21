@@ -1,4 +1,4 @@
-# uniportal
+# Uniportal
 
 ## Project setup
 Follow these steps:
