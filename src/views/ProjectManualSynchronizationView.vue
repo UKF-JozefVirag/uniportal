@@ -107,19 +107,23 @@
   </v-container>
 
 
+
+
   <v-col
       style="margin-top: 100px"
       offset="6">
-    <v-btn size="x-large" @click="getSelectedRows"
+    <v-btn size="x-large" @click="synchronizeProjects"
     >
       Submit
     </v-btn>
   </v-col>
+
 </template>
 
 
 <script>
 import axios from "axios";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ProjectManualSynchronizationView",
@@ -188,10 +192,18 @@ export default {
       }
     },
 
-    async getSelectedRows() {
+    async synchronizeProjects() {
       try {
         const project = this.selected;
         const programProject = this.selectedProgram;
+
+        if (project.length == 0 || programProject.length == 0) {
+          const toast = useToast();
+          toast.error("One or two checkboxes are not checked", {
+            timeout: 3000
+          });
+          return;
+        }
 
         await axios.post('http://localhost:8000/import/synchronize/manual', {
           project: project,
