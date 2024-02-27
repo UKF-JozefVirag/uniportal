@@ -7,3 +7,11 @@ opísať aj ako som vytváral kolekcie v postmanovi na api requesty
 
 pri vytvarani post requestu z FE na BE som dostával errory ako je na ploche screen..
 robí to vtedy, ked sa posiela request z inej domény, alebo portu kde je aplikácia hostovaná.. je to bezpečnostné opatrenie
+
+na charts sme použili knižnicu vue-chartsjs
+
+možno na koniec diplomovky dopísať ako som importol excely do appky a ako appka spracovala tieto data a pofotiť ako napadali do tabuliek
+
+popísať ako som vytvoril stmp gmail email na odosielanie verifikačných mailov, možno vylepšiť algoritmus na generaciu verifikačných klučov a popísať to viac
+taktiež metody registracie a podobne
+

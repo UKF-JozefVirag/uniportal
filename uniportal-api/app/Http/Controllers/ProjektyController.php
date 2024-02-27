@@ -17,6 +17,7 @@ class ProjektyController extends Controller
 
     public function importProjekty()
     {
+//        // kontrola typu suboru cez import button
 //        $file = request()->file('excel');
 //        // Kontrola typu súboru
 //        if (!$file || $file->getExtension() !== 'xlsx' || $file->getExtension() !== 'xls'  || $file->getExtension() !== 'csv' ) {
@@ -407,6 +408,24 @@ class ProjektyController extends Controller
         return $projekty;
     }
 
+    public function getProjectsNotSynchronized() {
+        $projekty = DB::select('
+        SELECT
+            ppd.id,
+            pp.id_projektu AS "ID Projektu",
+            pp.nazov AS "Názov",
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Celé meno zamestnanca",
+            ppd.podiel AS "Podiel na projekte"
+            ppd.id_program_projekt AS "ProgramID"
+        FROM pro_podiely ppd
+        LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
+        WHERE pp.id_program_projekt != "0"
+        ');
+        return $projekty;
+    }
+
     public function getProjectsVega() {
         $projekty = DB::select('
         SELECT
@@ -419,7 +438,7 @@ class ProjektyController extends Controller
         FROM pro_podiely ppd
         LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
         LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
-        WHERE pp.typ = "VEGA"
+        WHERE pp.typ = "VEGA" AND pp.id_program_projekt = "0"
         ');
         return $projekty;
     }
@@ -436,10 +455,14 @@ class ProjektyController extends Controller
         FROM pro_podiely ppd
         LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
         LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
-        WHERE pp.typ = "KEGA"
+        WHERE pp.typ = "KEGA" AND pp.id_program_projekt = "0"
         ');
         return $projekty;
     }
+
+
+
+
 
     public function getProjectsApvv() {
         $projekty = DB::select('
@@ -453,7 +476,7 @@ class ProjektyController extends Controller
         FROM pro_podiely ppd
         LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
         LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
-        WHERE pp.typ = "APVV";
+        WHERE pp.typ = "APVV" AND pp.id_program_projekt = "0"
         ');
         return $projekty;
     }

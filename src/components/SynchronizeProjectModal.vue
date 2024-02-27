@@ -1,40 +1,57 @@
 <template>
-  <div class="text-center">
-    <v-btn size="x-large"
+  <v-row justify="center">
+    <v-dialog
+        v-model="dialog"
+        persistent
+        width="256"
     >
-      Submit
-
-      <v-dialog
-          v-model="dialog"
-          activator="parent"
-          width="auto"
-      >
-        <v-card>
-          <v-card-text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" block @click="dialog = false">Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-btn>
-  </div>
+      <v-card>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text class="h6"><b>Si si istý ?</b></v-text>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green"
+              variant="text"
+              @click="acceptSync"
+          >
+            <b>Potvrdiť</b>
+          </v-btn>
+          <v-btn
+              color="green"
+              variant="text"
+              @click="dialog = false"
+          >
+            <b>Zavrieť</b>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 
 <script>
 export default {
-  data () {
+  name: 'SynchronizeProjectModal',
+  data() {
     return {
-      dialog: false,
+      dialog: false
     }
   },
+  methods:{
+    acceptSync() {
+      this.$emit('acceptSync');
+    },
+    openDialog() {
+      this.dialog = !this.dialog;
+    }
+  }
 }
 </script>
-
-<style scoped>
-.v-btn {
-  background: #43a047;
-  color: white;
-}
-</style>
