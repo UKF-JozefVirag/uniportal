@@ -1,11 +1,8 @@
 <template>
-    <v-container style="margin-top: 100px">
-
-    </v-container>
+    helo
 </template>
 
 <script>
-
 </script>
 
 <style>
