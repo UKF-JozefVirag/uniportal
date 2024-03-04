@@ -19,11 +19,15 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/registerx', 'UserController@registerx');
+
 $router->post('/register', 'UserController@register');
+$router->get('/ripUsers', 'UserController@ripUsers');
 
 $router->get('/import/projects', 'ProjektyController@importProjekty');
 $router->get('/projects', 'ProjektyController@getProjects');
+$router->get('/projectsNonSynchronized', 'ProjektyController@getProjectsNotSynchronized');
+
+
 $router->get('/projects/vega', 'ProjektyController@getProjectsVega');
 $router->get('/projects/kega', 'ProjektyController@getProjectsKega');
 $router->get('/projects/apvv', 'ProjektyController@getProjectsApvv');
@@ -39,8 +43,8 @@ $router->get('/apvv', 'ProjektyController@getApvv');
 $router->get('/import/apvv', 'ProjektyController@importApvv');
 
 $router->get('/import/synchronize', 'ProjektyController@synchronizeProjects');
-
-
 $router->post('/import/synchronize/manual', 'ProjektyController@manualSynchronizationProjects');
+
+$router->get('/import/publikacie', 'PublikacieController@getPublikacie');
 
 

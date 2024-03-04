@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Mail\Mailable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Rap2hpoutre\FastExcel\FastExcel;
+
 class UserController extends Controller
 {
     /**
@@ -27,7 +30,7 @@ class UserController extends Controller
             ]);
         } catch (\Exception $e) {
             $odoslat = $e->getMessage();
-    }
+        }
 
         $user = new User([
             'email' => $request->input('email'),
@@ -51,12 +54,11 @@ class UserController extends Controller
 
         $user->save();
 
-
         return response()->json($odoslat, 201);
-//        return response()->json(['user' => $user], 201);
     }
 
-    public function sendMail(){
+    public function sendMail()
+    {
         return $this->from('testmailukf@gmail.com')
             ->to('jozef.virag10@gmail.com')
             ->subject('Vitajte!')
@@ -64,3 +66,7 @@ class UserController extends Controller
     }
 
 }
+
+
+
+

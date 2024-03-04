@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Common\Exception\UnsupportedTypeException;
@@ -70,6 +71,11 @@ class ProjektyController extends Controller
 
 
 
+
+
+
+        $users = (new FastExcel)->import('../../excely/zoznam.xlsx');
+
         // ziskame z jsonu unikatne zaznamy zamestnancov podla id (id, meno, priezvisko)
         $zamestnanci = $allProjects->unique('employee_id')->map(function ($item)  use ($fakulty) {
             $fakultaId = null;
@@ -82,22 +88,68 @@ class ProjektyController extends Controller
                 }
             }
             return [
-                'id' => $item['employee_id'],
                 'meno' => $item['meno'],
                 'priezvisko' => $item['priezvisko'],
                 'cele_meno' => $item['meno'] . " " . $item['priezvisko'],
                 'rok' => $item['rok'],
-                'users_id' => 1,
+                'user_id' => $item['employee_id'],
                 'fakulta_id' => $fakultaId
             ];
         });
 
         foreach ($zamestnanci as $zamestnanec) {
             DB::table('zamestnanci')->updateOrInsert(
-                ['id' => $zamestnanec['id']],
                 $zamestnanec
             );
         }
+
+        //TODO: dokoncit // pseudokod:
+        //        // pridame vsetkych zamestnancov zo zoznam.xlsx a koniec cyklu,
+        //        // potom prejdeme po zamestnancoch z projektov a zistime, či sa nachadza v
+        //        // tabulke niekto s podobnym id, ak ano, updatneme zaznam o meno a priezvisko
+        //        // ak nie, tak pridame novy zaznam bez emailu a hesla a podobne, bude tam null
+        $userMails = array_filter($users->map(function ($item) {
+            if (is_numeric($item['Column22'])) {
+                return "";
+            } else {
+                return [
+                    'id' => $item['Column1'],
+                    'email' => isset($item['Column22']) ? $item['Column22'] . "@ukf.sk" : null,
+                ];
+            }
+        })->toArray());
+
+        DB::transaction(function () use ($userMails, $zamestnanci) {
+            foreach ($userMails as $user) {
+                $zamestnanecFound = false;
+                foreach ($zamestnanci as $zamestnanec) {
+                    if ($user['id'] == $zamestnanec['user_id']) {
+                        // Ak sa ID zhoduje, aktualizujeme záznam
+                        DB::table('zamestnanci')->where('user_id', $zamestnanec['user_id'])
+                            ->update(['email' => $user['email']]);
+
+                        $zamestnanecFound = true;
+                        break;
+                    }
+                }
+
+                if (!$zamestnanecFound) {
+                    DB::table('zamestnanci')->insert([
+                        'email' => $user['email'],
+                        'password' => password_hash('123456', PASSWORD_BCRYPT),
+                        'validation_key' => random_int(100000, 999999),
+                        'rola' => 1,
+                        'updated_at' => Carbon::now()->toDateTimeString(),
+                        'created_at' => Carbon::now()->toDateTimeString(),
+                        'verified' => 0,
+                    ]);
+                }
+            }
+        });
+
+
+
+
 
         // ziskame unikatne programy
         $programy = $allProjects->unique('grant_program_id')->map(function ($item) {
@@ -122,6 +174,7 @@ class ProjektyController extends Controller
                     'typ' => $item['acronym'],
                     'grant_programs_id' => $item['grant_program_id'],
                     'pro_rozpocet_id' => 1,
+                    'id_program_projekt'
                 ]);
 
                 $podiel = ($item['podiel'] !== "NULL") ? $item['podiel'] : 0;
@@ -130,13 +183,13 @@ class ProjektyController extends Controller
                     'podiel' => $podiel,
                     'rok' => $item['rok'],
                     'projekt_id' => $item['project_id'],
-                    'pro_projekt_id' => $proProjektId,
                     'zamestnanci_id' => $item['employee_id']
                 ]);
             }
         });
 
         return response()->json();
+
     }
 
 
@@ -147,8 +200,6 @@ class ProjektyController extends Controller
      * @throws ReaderNotOpenedException
      */
     public function importVega() {
-        //TODO: Treba nejak porovnavat tieto projekty so subormi VEGA KEGA a podobne, ak sa tam nazvy projektov zhoduju, zapisat ich asi do tabulky roz_pro_lat_sumy, kde stlpec kategoria je napr T1 a podobne
-
         // ziska vsetky zaznamy a vyfiltruje iba tie, kde sa nachadza pracovisko ukf
         $vegaProjects = ((new FastExcel)->import('../../excely/VEGA.xlsx'))->filter(function ($record) {
             // vyfiltrujeme iba pracoviska, ktore obsahuju 'UKF'
@@ -394,15 +445,12 @@ class ProjektyController extends Controller
     public function getProjects() {
         $projekty = DB::select('
         SELECT
-            ppd.id,
             pp.id_projektu AS "ID Projektu",
             pp.nazov AS "Názov",
-            pp.typ AS "Typ",
-            zam.cele_meno AS "Celé meno zamestnanca",
-            ppd.podiel AS "Podiel na projekte"
-        FROM pro_podiely ppd
-        LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
-        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id;
+            pp.typ AS "Typ"
+        FROM pro_projekt pp
+        LEFT JOIN pro_podiely ppd ON pp.id_projektu = ppd.projekt_id
+        GROUP BY pp.id_projektu, pp.nazov, pp.typ;
         ');
         return $projekty;
     }
