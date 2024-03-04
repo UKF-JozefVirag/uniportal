@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class PublikacieController extends Controller {
 
-    public function getPublikacie()
+    public function importPublikacie()
     {
         $allPublikacie = (new FastExcel)->startRow(6)->import('../../excely/zostava1 CREPČ UKF za roky 2018-2022.xlsx');
         $data = json_decode($allPublikacie, true);
@@ -22,13 +23,35 @@ class PublikacieController extends Controller {
                 $extrahovanyNazov = isset($matches[1]) ? trim($matches[1]) : '';
 
                 $zaznamyPublikacii[] = [
-                    'id' => $record[$keys[1]],
+                    'id_publikacie' => $record[$keys[1]],
                     'nazov' => $extrahovanyNazov,
                     'zaznam' => $record[$keys[2]],
                     'link' => $record[$keys[3]]
                 ];
             }
         }
-        return $zaznamyPublikacii;
+
+        foreach ($zaznamyPublikacii as $zaznam) {
+            DB::table('publikacie')->updateOrInsert([
+                'id_publikacie' => $zaznam['id_publikacie'],
+                'nazov' => $zaznam['nazov'],
+                'zaznam' => $zaznam['zaznam'],
+                'link' => $zaznam['link'],
+            ]);
+        }
+
+        return response("Success", 200);
+    }
+
+    public function getPublikacie() {
+        $publikacie = DB::select('
+        SELECT
+            pb.id_publikacie AS "ID Publikácie",
+            pb.nazov AS "Názov",
+            pb.zaznam AS "Celý záznam",
+            pb.link AS "Odkaz"
+        FROM publikacie pb
+        ');
+        return $publikacie;
     }
 }
