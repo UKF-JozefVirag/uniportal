@@ -11,6 +11,8 @@ class PublikacieController extends Controller {
         $data = json_decode($allPublikacie, true);
         $zaznamyPublikacii = [];
 
+
+
         foreach ($data as $record) {
             $keys = array_keys($record);
 
@@ -31,16 +33,66 @@ class PublikacieController extends Controller {
             }
         }
 
+
+        // Parsovanie zaznamu publikacie, ziskavanie nazvu prace, autora a podiel
         foreach ($zaznamyPublikacii as $zaznam) {
-            DB::table('publikacie')->updateOrInsert([
-                'id_publikacie' => $zaznam['id_publikacie'],
-                'nazov' => $zaznam['nazov'],
-                'zaznam' => $zaznam['zaznam'],
-                'link' => $zaznam['link'],
-            ]);
+            // Nájdeme index prvého výskytu značky '[Autor, xx%]' alebo '[Zostavovateľ, xx%]'
+            preg_match('/^.*?(?=\[Autor|Zostavovateľ)/', $zaznam['zaznam'], $matches);
+
+            // Ak sme našli prvý výskyt
+            if (!empty($matches)) {
+                // Získať text pred prvým výskytom autora alebo zostavovateľa
+                $textBeforeAuthor = $matches[0];
+
+                // Odstráň všetky výskyty ako [elektronický dokument], [textový dokument], [iný] atď. z $textBeforeAuthor
+                $textBeforeAuthor = preg_replace('/\[(elektronický dokument|textový dokument|iný)[^\]]*\]/', '', $textBeforeAuthor);
+
+                // Nájdeme index prvého výskytu znaku '/' alebo ';'
+                $slashIndex = strpos($zaznam['zaznam'], '/');
+                $semicolonIndex = strpos($zaznam['zaznam'], ';');
+
+                // Nájdeme menší index z týchto dvoch
+                if ($slashIndex === false) {
+                    $index = $semicolonIndex;
+                } elseif ($semicolonIndex === false) {
+                    $index = $slashIndex;
+                } else {
+                    $index = min($slashIndex, $semicolonIndex);
+                }
+
+                // Ak sme našli '/' alebo ';'
+                if ($index !== false) {
+                    // Odstránime časť za '/' alebo ';'
+                    $textBeforeSlashOrSemicolon = substr($zaznam['zaznam'], 0, $index);
+
+                    // Odstránime časť pred '/'
+                    $textAfterSlash = substr($zaznam['zaznam'], $slashIndex + 1);
+
+                    // Nájdeme všetky výskyty "[Autor, ..." alebo "[Zostavovateľ, ..." v texte
+                    preg_match_all('/\[(Autor|Zostavovateľ),[^]]+\]/', $textAfterSlash, $matches);
+
+                    // Ak sme našli nejaké zhody
+                    if (!empty($matches[0])) {
+                        // Vypíšeme všetky nájdené zhody spolu s časťou zľava
+                        foreach ($matches[0] as $match) {
+                            echo $textBeforeAuthor . ' ' . $match . "\n";
+                        }
+                    }
+                }
+            }
         }
 
-        return response("Success", 200);
+
+//        foreach ($zaznamyPublikacii as $zaznam) {
+//            DB::table('publikacie')->updateOrInsert([
+//                'id_publikacie' => $zaznam['id_publikacie'],
+//                'nazov' => $zaznam['nazov'],
+//                'zaznam' => $zaznam['zaznam'],
+//                'link' => $zaznam['link'],
+//            ]);
+//        }
+//
+//        return response("Success", 200);
     }
 
     public function getPublikacie() {
