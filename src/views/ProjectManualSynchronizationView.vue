@@ -28,13 +28,13 @@
           offset-md="2"
           offset-sm="2">
         <v-btn @click="fetchProjectsVegaData">
-          Show Vega Projects
+          Show VEGA Projects
         </v-btn>
         <v-btn class="mx-2" @click="fetchProjectsKegaData">
-          Show Kega Projects
+          Show KEGA Projects
         </v-btn>
         <v-btn @click="fetchProjectsApvvData">
-          Show Apvv Projects
+          Show APVV Projects
         </v-btn>
         <v-data-table
             :items="projects"
@@ -392,7 +392,9 @@ export default {
               value: "pridelena_dotacia_bv",
               sortable: true
             },
-            {text: "Actions", value: "actions", sortable: false},
+            {
+              text: "Actions", value: "actions", sortable: false
+            },
           ];
           this.filteredHeaders = this.headers;
           break;

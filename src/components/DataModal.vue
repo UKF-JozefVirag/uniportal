@@ -10,7 +10,7 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text class="h4"><b>Informácie o projekte: </b></v-text>
+                <v-text class="h4"><b>Všetky informácie: </b></v-text>
               </v-col>
               <v-col cols="12">
                 <v-list v-for="(value, key) in projectInfo" :key="key">

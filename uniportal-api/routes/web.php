@@ -46,6 +46,6 @@ $router->get('/import/synchronize', 'ProjektyController@synchronizeProjects');
 $router->post('/import/synchronize/manual', 'ProjektyController@manualSynchronizationProjects');
 
 $router->get('/publications', 'PublikacieController@getPublikacie');
-$router->get('/import/publikacie', 'PublikacieController@importPublikacie');
+$router->get('/import/publications', 'PublikacieController@importPublikacie');
 
 

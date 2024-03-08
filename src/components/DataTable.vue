@@ -39,6 +39,7 @@
             :items="records"
             :search="search"
             items-per-page="3"
+            :heads="headers"
             :loading="loading"
             v-model="selected"
             :items-per-page-options="[
@@ -82,6 +83,10 @@ export default {
       type: Boolean,
       required: true
     },
+    headers: {
+      type: Array,
+      required: false
+    }
 
   }
 
