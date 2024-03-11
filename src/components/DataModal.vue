@@ -14,7 +14,7 @@
               </v-col>
               <v-col cols="12">
                 <v-list v-for="(value, key) in projectInfo" :key="key">
-                  <b>{{key}}</b> : {{value}}
+                  <b>{{key}}</b> : <v-list-item> {{value}} </v-list-item>
                 </v-list>
               </v-col>
             </v-row>

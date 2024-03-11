@@ -114,16 +114,16 @@ class PublikacieController extends Controller {
                 // Prechádzame všetkých autorov publikácie
                 foreach ($zaznam['autori'] as $autor) {
                     // Získame ID zamestnanca podľa mena a priezviska
-                    $zamestnanecId = DB::table('zamestnanci')
+                    $existingUser = DB::table('zamestnanci')
                         ->where('cele_meno', $autor['meno'])
-                        ->value('id');
+                        ->first();
 
                     // Predvolená hodnota pre nového zamestnanca
                     $newUserId = null;
 
                     // Ak sme nenašli zamestnanca, vložíme nového zamestnanca do tabuľky 'zamestnanci'
-                    if (!$zamestnanecId) {
-                        $maxId = DB::table('zamestnanci')->max('id');
+                    if (!$existingUser) {
+                        $maxId = DB::table('zamestnanci')->max('user_id');
                         $newUserId = $maxId + 1;
 
                         // Vložíme záznam do tabuľky 'zamestnanci'
@@ -143,7 +143,7 @@ class PublikacieController extends Controller {
                             'verified' => 0
                         ]);
                     } else {
-                        $newUserId = $zamestnanecId;
+                        $newUserId = $existingUser->user_id + 1;
                     }
 
                     // Vložíme záznam do tabuľky 'publikacie_zamestnanci'
@@ -155,6 +155,7 @@ class PublikacieController extends Controller {
                 }
             }
         }
+
 
         // pridanie to tabulky publikacie_zamestnanci
         // zobrať zaznam['autori'], rozseknuť ho na zaklade , .. prvu a druhu časť swapnuť a medzi to dať medzeru a na zaklade toho hladať

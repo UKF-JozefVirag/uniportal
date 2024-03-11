@@ -447,10 +447,13 @@ class ProjektyController extends Controller
         SELECT
             pp.id_projektu AS "ID Projektu",
             pp.nazov AS "Názov",
-            pp.typ AS "Typ"
+            pp.typ AS "Typ",
+            ppd.rok AS "Rok",
+            zam.cele_meno AS "Meno",
+            ppd.podiel AS "Podiel"
         FROM pro_projekt pp
         LEFT JOIN pro_podiely ppd ON pp.id_projektu = ppd.projekt_id
-        GROUP BY pp.id_projektu, pp.nazov, pp.typ;
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.user_id
         ');
         return $projekty;
     }
