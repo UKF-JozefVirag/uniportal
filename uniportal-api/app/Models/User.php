@@ -22,15 +22,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $fillable = [
         'meno',
         'priezvisko',
-        'cele_meno',
-        'rok',
-        'fakulta_id',
         'email',
         'password',
         'validation_key',
-        'rola',
-        'updated_at',
-        'created_at',
+        'create_time',
+        'rola_id',
+        'katedra_id',
         'verified'
     ];
 
