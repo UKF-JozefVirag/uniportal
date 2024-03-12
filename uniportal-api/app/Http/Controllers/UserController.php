@@ -5,13 +5,42 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Mail\Mailable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
-use Rap2hpoutre\FastExcel\FastExcel;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        // Získať používateľa podľa emailu
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Overiť, či existuje používateľ s daným emailom a či je heslo správne
+        if (!$user || $credentials['password'] !== $user->password) {
+            return response([
+                'message' => 'Invalid credentials!'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        echo 22;
+        // Vytvoriť a pridať token do cookies
+        $token = $user->setToken('token')->plainTextToken;
+        $cookie = Cookie::make('jwt', $token, 60 * 24); // 1 deň
+
+        return response([
+            'message' => $token
+        ])->withCookie($cookie);
+
+        //TODO: nefunguje, pridať jwt package
+    }
+
+
     /**
      * @throws \Illuminate\Validation\ValidationException
      * @throws \Exception

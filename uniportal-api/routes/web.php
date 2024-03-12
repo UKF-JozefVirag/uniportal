@@ -13,12 +13,28 @@
 |
 */
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Laravel\Lumen\Routing\Router;
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+
+$router->post('/xd',  ['middleware' => ['auth'], function() use ($router) {
+    if (Auth::user()->rola == 2) return;
+    else {
+
+
+        return "xd";
+    }
+}]);
+
+$router->post('/login', 'UserController@login');
+
+$router->post('/xdd',  ['middleware' => ['auth'], function() use ($router) {
+}]);
 
 $router->post('/register', 'UserController@register');
 $router->get('/ripUsers', 'UserController@ripUsers');
