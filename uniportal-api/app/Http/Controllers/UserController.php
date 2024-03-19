@@ -3,41 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Mail\Mailable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
 
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+    public function login (Request $request) {
+        if (Auth('web')->attempt(['email' => request('email'), 'password' => request('password')])) {
+            // successfull authentication
+            $user = User::find(auth('web')->user()->id);
 
-        // Získať používateľa podľa emailu
-        $user = User::where('email', $credentials['email'])->first();
+            $user_token['token'] = $user->createToken('appToken')->accessToken;
+            $credentials = [
+                'email' => $request['email'],
+                'password' => $request['password'],
+            ];
 
-        // Overiť, či existuje používateľ s daným emailom a či je heslo správne
-        if (!$user || $credentials['password'] !== $user->password) {
-            return response([
-                'message' => 'Invalid credentials!'
-            ], Response::HTTP_UNAUTHORIZED);
+            return response()->json([
+                'success' => true,
+                'token' => $user_token,
+                'user' => $user,
+            ], 200);
+        } else {
+            // failure to authenticate
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to authenticate.',
+            ], 401);
         }
-
-        echo 22;
-        // Vytvoriť a pridať token do cookies
-        $token = $user->setToken('token')->plainTextToken;
-        $cookie = Cookie::make('jwt', $token, 60 * 24); // 1 deň
-
-        return response([
-            'message' => $token
-        ])->withCookie($cookie);
-
-        //TODO: nefunguje, pridať jwt package
     }
 
 
@@ -86,6 +89,16 @@ class UserController extends Controller
         return response()->json($odoslat, 201);
     }
 
+    public function logout(Request $request)
+    {
+        Auth::guard('web')->logout();
+    }
+
+    public function getUserLoggedIn()
+    {
+        return Auth::user();
+    }
+
     public function sendMail()
     {
         return $this->from('testmailukf@gmail.com')
@@ -93,6 +106,22 @@ class UserController extends Controller
             ->subject('Vitajte!')
             ->body('Dobrý deň,\n\nVitajte v našom systéme.\n\nS pozdravom,\nVáš tím');
     }
+
+    public function ti(Request $request)
+    {
+        return"xd";
+        // Get Blob data from request
+//        $blobData = file_get_contents($request->file('file'));
+//
+//        // Save Blob data to temporary file
+//        $tempFilePath = tempnam(sys_get_temp_dir(), 'excel');
+//        file_put_contents($tempFilePath, $blobData);
+//
+//        // Here you can process the data as needed
+//
+//        return response()->json(['data' => $blobData]);
+    }
+
 
 }
 

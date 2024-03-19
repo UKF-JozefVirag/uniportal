@@ -19,7 +19,11 @@ date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 |
 */
 
-$app = new Laravel\Lumen\Application(
+//$app = new Laravel\Lumen\Application(
+//    dirname(__DIR__)
+//);
+
+$app = new \Dusterio\LumenPassport\Lumen7Application(
     dirname(__DIR__)
 );
 
@@ -59,7 +63,9 @@ $app->singleton(
 |
 */
 
+$app->configure('auth');
 $app->configure('app');
+$app->configure('session');
 
 /*
 |--------------------------------------------------------------------------
@@ -73,8 +79,9 @@ $app->configure('app');
 */
 
 $app->middleware([
-    App\Http\Middleware\CorsMiddleware::class
+    \App\Http\Middleware\CorsMiddleware::class
 ]);
+
 
  $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
@@ -94,7 +101,9 @@ $app->middleware([
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
-
+$app->register(Laravel\Passport\PassportServiceProvider::class);
+$app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
+$app->register(Illuminate\Session\SessionServiceProvider::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
@@ -112,7 +121,11 @@ $app->router->group([
     require __DIR__.'/../routes/web.php';
 });
 
+$app->singleton('cookie', function () use ($app) {
+    return $app->loadComponent('session', 'Illuminate\Cookie\CookieServiceProvider', 'cookie');
+});
 
+$app->bind('Illuminate\Contracts\Cookie\QueueingFactory', 'cookie');
 
 // Zaregistruj poskytovatela databazy
 $app->register(Illuminate\Database\DatabaseServiceProvider::class);

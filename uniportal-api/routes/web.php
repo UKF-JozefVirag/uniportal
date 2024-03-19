@@ -13,41 +13,50 @@
 |
 */
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Route;
 use Laravel\Lumen\Routing\Router;
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+
 });
 
 
-$router->post('/xd',  ['middleware' => ['auth'], function() use ($router) {
-    if (Auth::user()->rola == 2) return;
-    else {
+$router->group(['prefix' => 'v1/oauth', 'middleware' => 'auth:api'], function () use ($router) {
+    \Dusterio\LumenPassport\LumenPassport::routes($router);
+});
 
+$router->group(['middleware' => 'auth'], function () use ($router) {
+    Route::post('/logout', 'UserController@logout');
+    Route::get('/getUserLoggedIn', 'UserController@getUserLoggedIn');
+});
 
-        return "xd";
-    }
-}]);
+//tymto sme si vytvorili key pre aplikaciu, laravel pouziva tiez tento isty approach, vygeneruje 32 miestny nahodny string
+//tento vygenerovany kluc sme vlozili do .env
+// je to namiesto prikazu php artisan key:generate
+//$router->get('/key', function() {
+//    return \Illuminate\Support\Str::random(32);
+//});
+
+$router->post('/import/ti', 'UserController@ti');
 
 $router->post('/login', 'UserController@login');
-
-$router->post('/xdd',  ['middleware' => ['auth'], function() use ($router) {
-}]);
 
 $router->post('/register', 'UserController@register');
 $router->get('/ripUsers', 'UserController@ripUsers');
 
-$router->get('/import/projects', 'ProjektyController@importProjekty');
 $router->get('/projects', 'ProjektyController@getProjects');
+$router->get('/projects/synced', 'ProjektyController@getProjectsSynced');
+$router->get('/import/projects', 'ProjektyController@importProjekty');
 $router->get('/projectsNonSynchronized', 'ProjektyController@getProjectsNotSynchronized');
 
 
 $router->get('/projects/vega', 'ProjektyController@getProjectsVega');
 $router->get('/projects/kega', 'ProjektyController@getProjectsKega');
 $router->get('/projects/apvv', 'ProjektyController@getProjectsApvv');
-
+$router->get('/projects/sync', 'ProjektyController@synchronizeProjects');
 
 $router->get('/vega', 'ProjektyController@getVega');
 $router->get('/import/vega', 'ProjektyController@importVega');

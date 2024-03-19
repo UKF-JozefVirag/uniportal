@@ -1,18 +1,18 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import ProjektyView from "@/views/ProjektyView.vue";
+import ProjectsView from "@/views/ProjectsView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
-import PublikacieView from "@/views/PublikacieView.vue";
-import StatistikyView from "@/views/StatistikyView.vue";
 import ImportViewYear from "@/views/ImportViewYear";
 import ImportView from "@/views/ImportView";
 import ProjectManualSynchronizationView from "@/views/ProjectManualSynchronizationView";
+import PublicationsView from "@/views/PublicationsView.vue";
+import StatisticsView from "@/views/StatisticsView.vue";
 
 const routes = [
     {
         path: '/',
-        name: 'projekty',
-        component: ProjektyView,
+        name: 'projects',
+        component: ProjectsView,
         props: true
     },
     {
@@ -22,15 +22,15 @@ const routes = [
         props: true
     },
     {
-        path: '/publikacie',
-        name: 'publikacie',
-        component: PublikacieView,
+        path: '/publications',
+        name: 'publications',
+        component: PublicationsView,
         props: true
     },
     {
-        path: '/statistiky',
-        name: 'statistiky',
-        component: StatistikyView,
+        path: '/statistics',
+        name: 'statistics',
+        component: StatisticsView,
         props: true
     },
     {

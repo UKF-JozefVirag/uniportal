@@ -37,7 +37,8 @@
           Show APVV Projects
         </v-btn>
         <v-data-table
-            :items="projects"
+            :items="filteredData"
+            :headers="projectHeaders"
             :search="search"
             items-per-page="3"
             :loading="loading"
@@ -52,7 +53,11 @@
             show-select
             select-strategy="single"
             return-object
-        ></v-data-table>
+        >
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-icon small class="mr-2" @click="showProjectRow(item), $refs.projectdatamodal.openDialog()">mdi-eye</v-icon>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -89,6 +94,7 @@
             :items="projectsProgram"
             :headers="filteredHeaders"
             :search="searchProgram"
+            :loading="loading"
             items-per-page="3"
             v-model="selectedProgram"
             density="compact"
@@ -122,6 +128,7 @@
     </v-btn>
   </v-col>
 
+  <DataModal :projectInfo="firstProjectModalText" ref="projectdatamodal" />
   <DataModal :projectInfo="projectModalText" ref="datamodal" />
   <SynchronizeProjectModal @acceptSync="as = true" ref="syncModal" />
 
@@ -143,7 +150,28 @@ export default {
   emits: ['syncAccept'],
   data() {
     return {
-      projects: [],
+      filteredData: [],
+      unfilteredData: [],
+      projectHeaders: [
+        {
+          title: "ID Projektu",
+          value: "ID Projektu",
+          sortable: true
+        },
+        {
+          title: "Názov",
+          value: "Názov",
+          sortable: true
+        },
+        {
+          title: "Typ",
+          value: "Typ",
+          sortable: true
+        },
+        {
+          text: "Actions", value: "actions", sortable: false
+        },
+      ],
       projectsProgram: [],
       search: '',
       searchProgram: '',
@@ -153,11 +181,30 @@ export default {
       headers: [],
       filteredHeaders: [],
       projectModalText: [],
+      firstProjectModalText: [],
       as: false
     };
   },
   methods: {
 
+    showProjectRow(value) {
+      // ziskanie ID Publikácie z aktuálneho riadka tabuľky
+      const projectId = value["ID Projektu"];
+      // vyhladavanie všetkych záznamov v unfilteredData s rovnakým ID Publikácie
+      const matchingProjects = this.unfilteredData.filter(item => item["ID Projektu"] === projectId);
+      // vytvorenie pola reťazcov s formátovanými údajmi o autoroch
+      let authorsFormatted = matchingProjects.map(project => {
+        const { Meno, Rok, Podiel } = project;
+        return `${Meno} - ${Rok}: ${Podiel}%`;
+      });
+      const newObject = {
+        "ID Projektu": value["ID Projektu"],
+        "Názov": value["Názov"],
+        "Typ": value["Typ"],
+        "Autori": authorsFormatted.join(", ") // spojenie vsetkych autorov do jedného reťazca s čiarkou ako oddelením
+      };
+      this.firstProjectModalText = newObject;
+    },
 
     showRow(value) {
       const newObject = Object.keys(value).reduce((acc, key) => {
@@ -175,42 +222,111 @@ export default {
     async fetchProjectsData() {
       try {
         const response = await axios.get("http://localhost:8000/projectsNonSynchronized/");
-        this.projects = response.data;
+        this.filteredData = response.data;
       } catch (error) {
-        console.error("Error fetching data:", error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
     async fetchProjectsVegaData() {
       try {
-        const response = await axios.get("http://localhost:8000/projects/vega");
-        this.projects = response.data;
+        this.loading = true;
+        const response = await axios.get("http://localhost:8000/projects");
+        const uniqueIds = new Set(); // Vytvoriť množinu pre ukladanie unikátnych ID
+        const filteredData = response.data.reduce((acc, item) => {
+          if (!uniqueIds.has(item['ID Projektu'])) { // Ak ID ešte nie je v množine, pridaj ho do výsledku a do množiny
+            uniqueIds.add(item['ID Projektu']);
+            acc.push({
+              "ID Projektu": item['ID Projektu'],
+              "Názov": item['Názov'],
+              "Typ": item['Typ'],
+              "Rok": item['Rok'],
+            });
+          }
+          return acc;
+        }, []);
+        this.filteredData = filteredData;
+        this.unfilteredData = response.data;
+        console.log(filteredData)
+        this.loading = false;
+
+
         const vega = await axios.get("http://localhost:8000/vega");
         this.projectsProgram = vega.data;
         this.setProgramDataHeader("vega");
       } catch (error) {
-        console.error("Error fetching data:", error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
     async fetchProjectsKegaData() {
       try {
-        const response = await axios.get("http://localhost:8000/projects/kega");
-        this.projects = response.data;
+        this.loading = true;
+        const response = await axios.get("http://localhost:8000/projects");
+        const uniqueIds = new Set(); // Vytvoriť množinu pre ukladanie unikátnych ID
+        const filteredData = response.data.reduce((acc, item) => {
+          if (!uniqueIds.has(item['ID Projektu'])) { // Ak ID ešte nie je v množine, pridaj ho do výsledku a do množiny
+            uniqueIds.add(item['ID Projektu']);
+            acc.push({
+              "ID Projektu": item['ID Projektu'],
+              "Názov": item['Názov'],
+              "Typ": item['Typ'],
+              "Rok": item['Rok'],
+            });
+          }
+          return acc;
+        }, []);
+        this.filteredData = filteredData;
+        this.unfilteredData = response.data;
+        console.log(filteredData)
+        this.loading = false;
+
+
         const kega = await axios.get("http://localhost:8000/kega");
         this.projectsProgram = kega.data;
         this.setProgramDataHeader("kega");
       } catch (error) {
-        console.error("Error fetching data:", error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
     async fetchProjectsApvvData() {
       try {
-        const response = await axios.get("http://localhost:8000/projects/apvv");
-        this.projects = response.data;
+        this.loading = true;
+        const response = await axios.get("http://localhost:8000/projects");
+        const uniqueIds = new Set(); // Vytvoriť množinu pre ukladanie unikátnych ID
+        const filteredData = response.data.reduce((acc, item) => {
+          if (!uniqueIds.has(item['ID Projektu'])) { // Ak ID ešte nie je v množine, pridaj ho do výsledku a do množiny
+            uniqueIds.add(item['ID Projektu']);
+            acc.push({
+              "ID Projektu": item['ID Projektu'],
+              "Názov": item['Názov'],
+              "Typ": item['Typ'],
+              "Rok": item['Rok'],
+            });
+          }
+          return acc;
+        }, []);
+        this.filteredData = filteredData;
+        this.unfilteredData = response.data;
+        console.log(filteredData)
+        this.loading = false;
+
+
         const apvv = await axios.get("http://localhost:8000/apvv");
         this.projectsProgram = apvv.data;
         this.setProgramDataHeader("apvv");
       } catch (error) {
-        console.error("Error fetching data:", error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
 
@@ -222,7 +338,10 @@ export default {
         this.projectsProgram = vega.data.concat(kega.data);
         this.projectsProgram = this.projectsProgram.concat(apvv.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
 
@@ -231,10 +350,10 @@ export default {
         const project = this.selected;
         const programProject = this.selectedProgram;
 
-        if (project.length == 0 || programProject.length == 0) {
+        if (project.length === 0 || programProject.length === 0) {
           const toast = useToast();
           toast.error("Zabudol si zakliknúť jeden alebo oba checkboxy", {
-            timeout: 3000
+            timeout: 8000
           });
           return;
         } else {
@@ -244,7 +363,10 @@ export default {
           });
         }
       } catch (error) {
-        console.error(error);
+        const toast = useToast();
+        toast.error(error, {
+          timeout: 8000
+        });
       }
     },
 

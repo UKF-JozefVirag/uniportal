@@ -17,7 +17,7 @@
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente, saepe.
             </p>
             <v-divider class="border-opacity-25"></v-divider>
-            <v-form fast-fail @submit.prevent>
+            <v-form @submit.prevent="login">
               <v-text-field
                   v-model="email"
                   label="Email"
@@ -31,14 +31,14 @@
 
               <v-btn type="submit" block class="mt-2" color="success">Prihlásiť sa</v-btn>
             </v-form>
-            <p class="mt-3 text-center">
-              Ešte tu nemáš účet ? 
-              <span>
-                <router-link to="/register" style="text-decoration: none;" class="text-success">
-                  Zaregistruj sa.
-                </router-link>
-              </span>
-            </p>
+<!--            <p class="mt-3 text-center">-->
+<!--              Ešte tu nemáš účet ? -->
+<!--              <span>-->
+<!--                <router-link to="/register" style="text-decoration: none;" class="text-success">-->
+<!--                  Zaregistruj sa.-->
+<!--                </router-link>-->
+<!--              </span>-->
+<!--            </p>-->
           </v-sheet>
         </v-col>
       </v-row>
@@ -47,8 +47,33 @@
 </template>
 
 
-<script setup>
+<script>
+import axios from "axios";
+import router from "@/router";
 
+export default {
+  data() {
+    return {
+      email: '',
+      password: ''
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post('http://localhost:8000/login', {
+          email: this.email,
+          password: this.password
+        });
+        if (response.status === 200) {
+          await router.push('/');
+        }
+      } catch (error) {
+        console.error('Chyba pri prihlásení', error.response.data);
+      }
+    }
+  }
+}
 </script>
 
 

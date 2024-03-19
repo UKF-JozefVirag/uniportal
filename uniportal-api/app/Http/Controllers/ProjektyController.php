@@ -148,31 +148,12 @@ class ProjektyController extends Controller
         });
 
 
-
-
-
-        // ziskame unikatne programy
-        $programy = $allProjects->unique('grant_program_id')->map(function ($item) {
-            return [
-                'id' => $item['grant_program_id'],
-                'acronym' => $item['acronym'],
-            ];
-        });
-
-        foreach ($programy as $program) { // prida programy, ak este neexistuju
-            DB::table('grant_programs')->updateOrInsert(
-                ['id' => $program['id']],
-                $program
-            );
-        }
-
         DB::transaction(function () use ($allProjects) {
             foreach ($allProjects as $item) {
                 $proProjektId = DB::table('pro_projekt')->updateOrInsert([
                     'id_projektu' => $item['project_id'],
                     'nazov' => $item['title'],
                     'typ' => $item['acronym'],
-                    'grant_programs_id' => $item['grant_program_id'],
                     'pro_rozpocet_id' => 1,
                     'id_program_projekt'
                 ]);
@@ -442,20 +423,44 @@ class ProjektyController extends Controller
         return response("Success", 200);
     }
 
+    public function getProjectsSynced() {
+        $projekty = DB::select('
+        SELECT
+            pp.id_projektu AS "ID Projektu",
+            pp.nazov AS "Názov",
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Meno",
+            ppd.podiel AS "Podiel",
+            ppd.rok AS "Rok"
+        FROM pro_projekt pp
+        LEFT JOIN pro_podiely ppd ON pp.id_projektu = ppd.projekt_id
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.user_id
+        WHERE pp.id_program_projekt != 0
+        GROUP BY pp.id_projektu, pp.nazov, pp.typ, zam.cele_meno, ppd.podiel, ppd.rok;
+        ');
+        return $projekty;
+    }
+
     public function getProjects() {
         $projekty = DB::select('
         SELECT
             pp.id_projektu AS "ID Projektu",
             pp.nazov AS "Názov",
-            pp.typ AS "Typ"
+            pp.typ AS "Typ",
+            zam.cele_meno AS "Meno",
+            ppd.podiel AS "Podiel",
+            ppd.rok AS "Rok"
         FROM pro_projekt pp
         LEFT JOIN pro_podiely ppd ON pp.id_projektu = ppd.projekt_id
-        GROUP BY pp.id_projektu, pp.nazov, pp.typ;
+        LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.user_id
+        WHERE pp.id_program_projekt = 0
+        GROUP BY pp.id_projektu, pp.nazov, pp.typ, zam.cele_meno, ppd.podiel, ppd.rok;
         ');
         return $projekty;
     }
 
-    public function getProjectsVega() {
+    public function getProjectsVega(): array
+    {
         $projekty = DB::select('
         SELECT
             ppd.id,
@@ -501,7 +506,7 @@ class ProjektyController extends Controller
         FROM pro_podiely ppd
         LEFT JOIN pro_projekt pp ON ppd.projekt_id = pp.id_projektu
         LEFT JOIN zamestnanci zam ON ppd.zamestnanci_id = zam.id
-        WHERE pp.typ = "APVV";
+        WHERE pp.typ = "APVV"
         ');
         return $projekty;
     }
@@ -561,6 +566,13 @@ class ProjektyController extends Controller
             ]);
 
         return response("Success", 200);
+    }
+
+    public function getMostProjectsPerFaculty()
+    {
+        $sql = '
+
+        ';
     }
 
 }

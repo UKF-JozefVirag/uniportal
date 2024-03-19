@@ -68,7 +68,7 @@ import DataModal from "@/components/DataModal.vue";
 import {h} from "vue";
 
 export default {
-  name: "PublikacieView",
+  name: "PublicationsView",
   components: {
     DataModal,
     LoadingSpinner,
@@ -129,6 +129,7 @@ export default {
         console.log(filteredData)
         this.loading = false;
       } catch (error) {
+        //pridat error toast
         console.error("Error fetching data:", error);
       }
     },

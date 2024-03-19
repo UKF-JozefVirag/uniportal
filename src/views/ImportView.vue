@@ -8,8 +8,8 @@
         offset-md="4"
         offset-sm="2"
     >
-      <v-form @submit.prevent="submitForm" validate-on="submit lazy" style="margin-top: 200px; text-align: center">
-        <InputFile :label="`Import dotácií projektov VEGA - ${cardText}`" type="VEGA" @change="onFileChange" />
+      <v-form @submit.prevent="uploadExcel" validate-on="submit lazy" style="margin-top: 200px; text-align: center">
+        <InputFile :label="`Import dotácií projektov VEGA - ${cardText}`" type="VEGA" @change="uploadFile" />
         <InputFile :label="`Import dotácií projektov KEGA - ${cardText}`" type="KEGA" @change="onFileChange" />
         <InputFile :label="`Import dotácií projektov APVV - ${cardText}`" type="APVV" @change="onFileChange" />
         <v-btn
@@ -44,6 +44,42 @@ export default {
       // Uloží vybraný súbor podľa jeho typu
       this.selectedFiles[type] = file;
     },
+
+    uploadFile(event) {
+      const file = event.target.files[0];
+      console.log('Nahraný súbor:', file.name, ', typ:', file.type);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Create a Blob from the file
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const blob = new Blob([reader.result], { type: file.type });
+        this.uploadExcel(blob);
+      };
+    },
+
+
+    uploadExcel(blob) {
+      const formData = new FormData();
+      formData.append('file', blob);
+
+      axios.post('http://localhost:8000/import/ti', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+          .then(function (response) {
+            console.log(response.data.success);
+          })
+
+          .catch(function (error) {
+            console.log(error);
+          });
+    },
+
     submitForm() {
       // Pred odoslaním formulára skontroluje, či boli vybrané súbory pre všetky typy
       const types = ["VEGA", "KEGA", "APVV"];

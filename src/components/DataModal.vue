@@ -3,8 +3,7 @@
     <v-dialog
         v-model="dialog"
         persistent
-        width="512"
-    >
+        width="512">
       <v-card>
         <v-card-text>
           <v-container>
@@ -25,8 +24,7 @@
           <v-btn
               color="green"
               variant="text"
-              @click="dialog = false"
-          >
+              @click="dialog = false">
             <b>Zavrieť</b>
           </v-btn>
         </v-card-actions>
