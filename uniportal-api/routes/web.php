@@ -40,8 +40,6 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 //    return \Illuminate\Support\Str::random(32);
 //});
 
-$router->post('/import/ti', 'UserController@ti');
-
 $router->post('/login', 'UserController@login');
 
 $router->post('/register', 'UserController@register');
@@ -49,7 +47,7 @@ $router->get('/ripUsers', 'UserController@ripUsers');
 
 $router->get('/projects', 'ProjektyController@getProjects');
 $router->get('/projects/synced', 'ProjektyController@getProjectsSynced');
-$router->get('/import/projects', 'ProjektyController@importProjekty');
+Route::post('/import/projects', 'ProjektyController@importProjekty');
 $router->get('/projectsNonSynchronized', 'ProjektyController@getProjectsNotSynchronized');
 
 
@@ -73,4 +71,6 @@ $router->post('/import/synchronize/manual', 'ProjektyController@manualSynchroniz
 $router->get('/publications', 'PublikacieController@getPublikacie');
 $router->get('/import/publications', 'PublikacieController@importPublikacie');
 
-
+$router->get('/statistics/all', 'ProjektyController@getAllStatInfo');
+$router->get('/statistics/faculty', 'ProjektyController@getShareByFaculty');
+$router->get('/statistics/author', 'ProjektyController@getShareByAuthors');

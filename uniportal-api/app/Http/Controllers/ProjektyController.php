@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\DB;
 class ProjektyController extends Controller
 {
 
-    public function importProjekty()
+    public function importProjekty(Request $request)
     {
-//        $file = request()->file('excel');
-//        // Kontrola typu súboru
+//        $file = request()->file('file');
+        // Kontrola typu súboru
 //        if (!$file || $file->getExtension() !== 'xlsx' || $file->getExtension() !== 'xls'  || $file->getExtension() !== 'csv' ) {
 //            return response()->json('Neplatný typ súboru', 400);
 //        }
@@ -531,19 +531,19 @@ class ProjektyController extends Controller
         $vegaResults = DB::table('pro_projekt')
             ->join('vega', 'vega.nazov_projektu', '=', 'pro_projekt.nazov')
             ->update([
-                'pro_projekt.id_program_projekt' => DB::raw('vega.idVEGA'),
+                'pro_projekt.id_program_projekt' => DB::raw('vega.evidencne_cislo'),
             ]);
 
         $kegaResults = DB::table('pro_projekt')
             ->join('kega', 'kega.nazov_projektu', '=', 'pro_projekt.nazov')
             ->update([
-                'pro_projekt.id_program_projekt' => DB::raw('kega.idKEGA'),
+                'pro_projekt.id_program_projekt' => DB::raw('kega.evidencne_cislo'),
             ]);
 
         $apvvResults = DB::table('pro_projekt')
             ->join('apvv', 'apvv.nazov', '=', 'pro_projekt.nazov')
             ->update([
-                'pro_projekt.id_program_projekt' => DB::raw('apvv.idAPVV'),
+                'pro_projekt.id_program_projekt' => DB::raw('apvv.id_projektu'),
             ]);
 
         return [$vegaResults, $kegaResults, $apvvResults];
@@ -568,11 +568,156 @@ class ProjektyController extends Controller
         return response("Success", 200);
     }
 
-    public function getMostProjectsPerFaculty()
+    public function getAllStatInfo()
     {
-        $sql = '
+        $sql = DB::select("
+            SELECT
+                pp.nazov,
+                pp.id_program_projekt,
+                ppd.podiel,
+                ppd.rok,
+                zam.cele_meno,
+                CASE
+                    WHEN pp.id_program_projekt = vega.evidencne_cislo THEN 'vega'
+                    WHEN pp.id_program_projekt = kega.evidencne_cislo THEN 'kega'
+                    WHEN pp.id_program_projekt = apvv.id_projektu THEN 'apvv'
+                    ELSE NULL
+                END AS typ,
+                COALESCE(vega.pridelena_dotacia_bv, kega.pridelena_dotacia_bv, apvv.pridelena_dotacia_bv) AS pridelena_dotacia_bv,
+                CASE
+                    WHEN pp.id_program_projekt = apvv.id_projektu THEN apvv.fakulta
+                    WHEN pp.id_program_projekt = vega.evidencne_cislo THEN vega.skratka
+                    WHEN pp.id_program_projekt = kega.evidencne_cislo THEN kega.pracovisko
+                    ELSE NULL
+                END AS fakulta,
+                ROUND((COALESCE(vega.pridelena_dotacia_bv, kega.pridelena_dotacia_bv, apvv.pridelena_dotacia_bv) / 100) * ppd.podiel, 2) AS pomer_pridelena_dotacia_bv_podiel
+            FROM
+                pro_projekt pp
+            LEFT JOIN
+                vega ON pp.id_program_projekt = vega.evidencne_cislo
+            LEFT JOIN
+                kega ON pp.id_program_projekt = kega.evidencne_cislo
+            LEFT JOIN
+                apvv ON pp.id_program_projekt = apvv.id_projektu
+            INNER JOIN
+                pro_podiely ppd ON ppd.projekt_id = pp.id_projektu
+            INNER JOIN
+                zamestnanci zam ON ppd.zamestnanci_id = zam.user_id
+            WHERE
+                pp.id_program_projekt != 0;
+        ");
 
-        ';
+        // upravime nazvy fakult do normalizovaneho tvaru
+        // vynechali sme tu fakultu "Vyberte, prosím" kedže nevieme pod aku fakultu to spadá a sumy v nej boli príliš vysoké
+        // robilo to velké odchýlky v grafoch
+        $filteredRecords = [];
+        foreach ($sql as $record) {
+            if ($record->fakulta !== "vyberte, prosím") {
+                $record->fakulta = str_replace("UKF", "", $record->fakulta);
+                $record->fakulta = rtrim($record->fakulta);
+                switch ($record->fakulta) {
+                    case "FSVZ":
+                        $record->fakulta = "Fakulta sociálnych vied a zdravotníctva";
+                        break;
+                    case "FF":
+                        $record->fakulta = "Filozofická fakulta";
+                        break;
+                    case "FPVaI":
+                        $record->fakulta = "Fakulta prírodných vied a informatiky";
+                        break;
+                    case "PdF":
+                        $record->fakulta = "Pedagogická fakulta";
+                        break;
+                    case "FSŠ":
+                        $record->fakulta = "Fakulta stredoeurópskych štúdií";
+                        break;
+                }
+                $filteredRecords[] = $record;
+            }
+        }
+
+        return $filteredRecords;
+
+
     }
+
+    public function getShareByFaculty()
+    {
+        /*
+         * Táto metóda vypíše štatistiky podielov fakúlt za roky 2020, 2021,2022
+         * */
+
+        $records = $this->getAllStatInfo();
+//        $vegaRecords = [];
+//        $kegaRecords = [];
+//        $apvvRecords = [];
+//        foreach ($sql as $record) {
+//            if ($record->typ == "vega") {
+//                $vegaRecords[] = $record;
+//            }
+//            else if ($record->typ == "kega") {
+//                $kegaRecords[] = $record;
+//            }
+//            else $apvvRecords[] = $record;
+//        }
+
+        $sumy_podielov_fakult = [
+            '2020' => [],
+            '2021' => [],
+            '2022' => [],
+        ];
+
+        foreach ($records as $record) {
+            $fakulta = $record->fakulta;
+            $rok = $record->rok;
+            $podiel = $record->pomer_pridelena_dotacia_bv_podiel;
+
+            // Inicializácia sumy pre fakultu v danom roku, ak ešte neexistuje
+            if (!isset($sumy_podielov_fakult[$rok][$fakulta])) {
+                $sumy_podielov_fakult[$rok][$fakulta] = 0;
+            }
+
+            // Pridanie hodnoty do sumy pre danú fakultu a rok
+            $sumy_podielov_fakult[$rok][$fakulta] += $podiel;
+        }
+        foreach ($sumy_podielov_fakult as &$sumy) {
+            foreach ($sumy as &$suma) {
+                $suma = round($suma, 2);
+            }
+        }
+        return $sumy_podielov_fakult;
+    }
+
+    public function getShareByAuthors()
+    {
+        $records = $this->getAllStatInfo();
+
+        $authorShares = []; // Inicializujeme prázdne pole pre uchovávanie informácií o zdieľaní autorov
+
+        // Prechádzame všetky záznamy
+        foreach ($records as $record) {
+            $authorName = $record->cele_meno; // Získame meno autora
+            $shareAmount = $record->pomer_pridelena_dotacia_bv_podiel; // Získame pridelenej sumy autora
+            $year = $record->rok; // Získame rok
+
+            // Ak už máme informácie o tomto autorovi, pridáme pridelenej sumy k existujúcemu záznamu
+            if (array_key_exists($authorName, $authorShares)) {
+                // Ak už máme informácie o tomto roku pre daného autora, pridáme pridelenej sumy k existujúcemu záznamu
+                if (array_key_exists($year, $authorShares[$authorName])) {
+                    $authorShares[$authorName][$year] += $shareAmount;
+                } else { // Ak nemáme ešte informácie o tomto roku pre daného autora, vytvoríme nový záznam pre rok
+                    $authorShares[$authorName][$year] = $shareAmount;
+                }
+            } else { // Ak nemáme ešte informácie o tomto autorovi, vytvoríme nový záznam pre autora aj rok
+                $authorShares[$authorName] = [$year => $shareAmount];
+            }
+        }
+
+        // Vrátime zdieľané sumy autorov
+        return $authorShares;
+    }
+
+
+
 
 }

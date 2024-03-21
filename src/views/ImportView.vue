@@ -8,8 +8,8 @@
         offset-md="4"
         offset-sm="2"
     >
-      <v-form @submit.prevent="uploadExcel" validate-on="submit lazy" style="margin-top: 200px; text-align: center">
-        <InputFile :label="`Import dotácií projektov VEGA - ${cardText}`" type="VEGA" @change="uploadFile" />
+      <v-form @submit.prevent="uploadFile" validate-on="submit lazy" style="margin-top: 200px; text-align: center">
+        <InputFile :label="`Import dotácií projektov VEGA - ${cardText}`" type="VEGA"/>
         <InputFile :label="`Import dotácií projektov KEGA - ${cardText}`" type="KEGA" @change="onFileChange" />
         <InputFile :label="`Import dotácií projektov APVV - ${cardText}`" type="APVV" @change="onFileChange" />
         <v-btn
@@ -45,67 +45,24 @@ export default {
       this.selectedFiles[type] = file;
     },
 
-    uploadFile(event) {
-      const file = event.target.files[0];
-      console.log('Nahraný súbor:', file.name, ', typ:', file.type);
-
+    uploadFile(e) {
+      const file = e.target.files[0];
       const formData = new FormData();
+      formData.append('name', file.name);
       formData.append('file', file);
 
-      // Create a Blob from the file
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const blob = new Blob([reader.result], { type: file.type });
-        this.uploadExcel(blob);
-      };
-    },
-
-
-    uploadExcel(blob) {
-      const formData = new FormData();
-      formData.append('file', blob);
-
-      axios.post('http://localhost:8000/import/ti', formData, {
+      axios.post('http://localhost:8000/import/projects', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      })
-          .then(function (response) {
-            console.log(response.data.success);
-          })
-
-          .catch(function (error) {
-            console.log(error);
-          });
+      }).then(response => {
+        console.log(response);
+      }).catch(error => {
+        console.log(error);
+      });
     },
 
-    submitForm() {
-      // Pred odoslaním formulára skontroluje, či boli vybrané súbory pre všetky typy
-      const types = ["VEGA", "KEGA", "APVV"];
-      // for (const type of types) {
-      //   if (!this.selectedFiles[type]) {
-      //     console.error(`Súbor pre typ ${type} nebol vybraný.`);
-      //     return;
-      //   }
-      // }
-      console.log("123" + this.selectedFiles["vega"]);
-      const formData = new FormData();
-      formData.append('year', this.cardText);
 
-      // Pridá vybrané súbory do formData podľa ich typu
-      for (const type of types) {
-        formData.append(type.toLowerCase(), this.selectedFiles[type]);
-      }
-
-      axios.post('/asd', formData)
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    },
   }
 }
 </script>

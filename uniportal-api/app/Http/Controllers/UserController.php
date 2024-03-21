@@ -109,22 +109,11 @@ class UserController extends Controller
 
     public function ti(Request $request)
     {
-        return"xd";
-        // Get Blob data from request
-//        $blobData = file_get_contents($request->file('file'));
-//
-//        // Save Blob data to temporary file
-//        $tempFilePath = tempnam(sys_get_temp_dir(), 'excel');
-//        file_put_contents($tempFilePath, $blobData);
-//
-//        // Here you can process the data as needed
-//
-//        return response()->json(['data' => $blobData]);
+        return \response(base64_decode($request->input('file')), 200);
     }
 
 
 }
-
 
 
 

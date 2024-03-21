@@ -31,10 +31,7 @@ foreach ($zaznamyPublikacii as $zaznam) {
             }
         }
 
-
+---------------------------------------------------------
 pri vytvarani importov sme dostavali error
 Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://localhost:8000/import/ti. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing). Status code: 500.
-
-ktory sme vyriešili takto
-
-https://stackoverflow.com/questions/66558151/get-request-result-to-cors-error-in-lumen-8
+ktory sme vyriešili doplnením kodu do CorsMiddleware, dať snippet
