@@ -74,3 +74,4 @@ $router->get('/import/publications', 'PublikacieController@importPublikacie');
 $router->get('/statistics/all', 'ProjektyController@getAllStatInfo');
 $router->get('/statistics/faculty', 'ProjektyController@getShareByFaculty');
 $router->get('/statistics/author', 'ProjektyController@getShareByAuthors');
+$router->get('/statistics/TCategory', 'ProjektyController@getShareByCategoryT');

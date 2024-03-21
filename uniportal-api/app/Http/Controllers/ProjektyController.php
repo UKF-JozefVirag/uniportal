@@ -585,6 +585,10 @@ class ProjektyController extends Controller
                 END AS typ,
                 COALESCE(vega.pridelena_dotacia_bv, kega.pridelena_dotacia_bv, apvv.pridelena_dotacia_bv) AS pridelena_dotacia_bv,
                 CASE
+                    WHEN pp.id_program_projekt = apvv.id_projektu THEN apvv.kategoria
+                    ELSE NULL
+                END AS kategoria,
+                CASE
                     WHEN pp.id_program_projekt = apvv.id_projektu THEN apvv.fakulta
                     WHEN pp.id_program_projekt = vega.evidencne_cislo THEN vega.skratka
                     WHEN pp.id_program_projekt = kega.evidencne_cislo THEN kega.pracovisko
@@ -605,6 +609,7 @@ class ProjektyController extends Controller
                 zamestnanci zam ON ppd.zamestnanci_id = zam.user_id
             WHERE
                 pp.id_program_projekt != 0;
+
         ");
 
         // upravime nazvy fakult do normalizovaneho tvaru
@@ -648,18 +653,6 @@ class ProjektyController extends Controller
          * */
 
         $records = $this->getAllStatInfo();
-//        $vegaRecords = [];
-//        $kegaRecords = [];
-//        $apvvRecords = [];
-//        foreach ($sql as $record) {
-//            if ($record->typ == "vega") {
-//                $vegaRecords[] = $record;
-//            }
-//            else if ($record->typ == "kega") {
-//                $kegaRecords[] = $record;
-//            }
-//            else $apvvRecords[] = $record;
-//        }
 
         $sumy_podielov_fakult = [
             '2020' => [],
@@ -680,12 +673,14 @@ class ProjektyController extends Controller
             // Pridanie hodnoty do sumy pre danú fakultu a rok
             $sumy_podielov_fakult[$rok][$fakulta] += $podiel;
         }
+
+        // Usporiadanie fakúlt podľa abecedy
         foreach ($sumy_podielov_fakult as &$sumy) {
-            foreach ($sumy as &$suma) {
-                $suma = round($suma, 2);
-            }
+            ksort($sumy);
         }
+
         return $sumy_podielov_fakult;
+
     }
 
     public function getShareByAuthors()
@@ -715,6 +710,38 @@ class ProjektyController extends Controller
 
         // Vrátime zdieľané sumy autorov
         return $authorShares;
+    }
+
+    public function getShareByCategoryT()
+    {
+        $records = $this->getAllStatInfo();
+
+
+        $apvvRecords = [];
+        foreach ($records as $record) {
+            if ($record->typ == "apvv") {
+                $apvvRecords[] = $record;
+            }
+            else continue;
+        }
+
+        foreach ($apvvRecords as $record) {
+            $category = $record->kategoria;
+            $year = $record->rok;
+            $pridelenaDotacia = $record->pridelena_dotacia_bv;
+
+            if (!isset($sumByCategoryAndYear[$year][$category])) {
+                $sumByCategoryAndYear[$year][$category] = 0;
+            }
+
+            $sumByCategoryAndYear[$year][$category] += $pridelenaDotacia;
+            foreach ($sumByCategoryAndYear as &$sumByYear) {
+                ksort($sumByYear);
+            }
+        }
+
+        return $sumByCategoryAndYear;
+
     }
 
 
