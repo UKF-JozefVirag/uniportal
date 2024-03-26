@@ -2,7 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 import ProjectsView from "@/views/ProjectsView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
-import ImportViewYear from "@/views/ImportViewYear";
 import ImportView from "@/views/ImportView";
 import ProjectManualSynchronizationView from "@/views/ProjectManualSynchronizationView";
 import PublicationsView from "@/views/PublicationsView.vue";
@@ -44,12 +43,7 @@ const routes = [
         component: RegisterView,
     },
     {
-        path: '/importYear',
-        name: 'importYear',
-        component: ImportViewYear,
-    },
-    {
-        path: '/import/:year',
+        path: '/import',
         name: 'import',
         component: ImportView,
     },

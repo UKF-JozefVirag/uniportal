@@ -1,14 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Rap2hpoutre\FastExcel\FastExcel;
 
-class PublikacieController extends Controller {
+class PublicationsController extends Controller {
 
-    public function importPublikacie()
+    public function importPublikacie(Request $request)
     {
-        $allPublikacie = (new FastExcel)->startRow(6)->import('../../excely/zostava1 CREPČ UKF za roky 2018-2022.xlsx');
+        $file = request()->file('file');
+        $allPublikacie = (new FastExcel)->startRow(6)->import($file);
         $data = json_decode($allPublikacie, true);
         $zaznamyPublikacii = [];
 

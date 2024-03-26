@@ -2,7 +2,6 @@
   <v-row>
     <v-col>
       <v-file-input
-          accept=".xlsx, .xls, .csv"
           :label="label"
           @change="onFileChange"
       ></v-file-input>

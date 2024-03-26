@@ -27,15 +27,20 @@
           offset-lg="2"
           offset-md="2"
           offset-sm="2">
-        <v-btn @click="fetchProjectsVegaData">
-          Show VEGA Projects
-        </v-btn>
-        <v-btn class="mx-2" @click="fetchProjectsKegaData">
-          Show KEGA Projects
-        </v-btn>
-        <v-btn @click="fetchProjectsApvvData">
-          Show APVV Projects
-        </v-btn>
+        <div class="actionButtons">
+          <v-btn @click="fetchProjectsVegaData">
+            Zobraziť VEGA Projekty
+          </v-btn>
+          <v-btn class="mx-2" @click="fetchProjectsKegaData">
+            Zobraziť KEGA Projekty
+          </v-btn>
+          <v-btn @click="fetchProjectsApvvData">
+            Zobraziť APVV Projekty
+          </v-btn>
+          <v-btn @click="autoSyncProjects">
+            Automatická synchronizácia
+          </v-btn>
+        </div>
         <v-data-table
             :items="filteredData"
             :headers="projectHeaders"
@@ -379,6 +384,10 @@ export default {
       });
     },
 
+    async autoSyncProjects() {
+      await axios.get('http://localhost:8000/import/synchronize/')
+    },
+
     setProgramDataHeader(program) {
       switch (program) {
         case "vega":
@@ -665,6 +674,10 @@ export default {
 .v-btn {
   background: #43a047;
   color: white;
+}
+
+.actionButtons > *{
+  margin:10px;
 }
 
 </style>

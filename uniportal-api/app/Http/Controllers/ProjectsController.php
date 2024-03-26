@@ -13,19 +13,14 @@ use OpenSpout\Reader\Exception\ReaderNotOpenedException;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\DB;
 
-class ProjektyController extends Controller
+class ProjectsController extends Controller
 {
 
     public function importProjekty(Request $request)
     {
-//        $file = request()->file('file');
-        // Kontrola typu súboru
-//        if (!$file || $file->getExtension() !== 'xlsx' || $file->getExtension() !== 'xls'  || $file->getExtension() !== 'csv' ) {
-//            return response()->json('Neplatný typ súboru', 400);
-//        }
-//        return $file;
 
-        $allProjects = (new FastExcel)->import('../../excely/projekty-2020-2021-2022.xlsx');
+        $file = request()->file('file');
+        $allProjects = (new FastExcel)->import($file);
 
         // ziskame unikatne nazvy fakult
         $fakulty = $allProjects->unique('fakulta')->map(function ($item) {
@@ -69,11 +64,6 @@ class ProjektyController extends Controller
             );
         }
 
-
-
-
-
-
         $users = (new FastExcel)->import('../../excely/zoznam.xlsx');
 
         // ziskame z jsonu unikatne zaznamy zamestnancov podla id (id, meno, priezvisko)
@@ -103,11 +93,12 @@ class ProjektyController extends Controller
             );
         }
 
-        //TODO: dokoncit // pseudokod:
-        //        // pridame vsetkych zamestnancov zo zoznam.xlsx a koniec cyklu,
-        //        // potom prejdeme po zamestnancoch z projektov a zistime, či sa nachadza v
-        //        // tabulke niekto s podobnym id, ak ano, updatneme zaznam o meno a priezvisko
-        //        // ak nie, tak pridame novy zaznam bez emailu a hesla a podobne, bude tam null
+
+        // pridame vsetkych zamestnancov zo zoznam.xlsx a koniec cyklu,
+        // potom prejdeme po zamestnancoch z projektov a zistime, či sa nachadza v
+        // tabulke niekto s podobnym id, ak ano, updatneme zaznam o meno a priezvisko
+        // ak nie, tak pridame novy zaznam bez emailu a hesla a podobne, bude tam null
+
         $userMails = array_filter($users->map(function ($item) {
             if (is_numeric($item['Column22'])) {
                 return "";
@@ -181,8 +172,12 @@ class ProjektyController extends Controller
      * @throws ReaderNotOpenedException
      */
     public function importVega() {
+
+        $file = request()->file('file');
+        $vegaProjects = (new FastExcel)->import($file);
+
         // ziska vsetky zaznamy a vyfiltruje iba tie, kde sa nachadza pracovisko ukf
-        $vegaProjects = ((new FastExcel)->import('../../excely/VEGA.xlsx'))->filter(function ($record) {
+        $vegaProjects = ((new FastExcel)->import($vegaProjects))->filter(function ($record) {
             // vyfiltrujeme iba pracoviska, ktore obsahuju 'UKF'
             return str_contains($record['Pracovisko'], 'UKF');
         })->toArray();
@@ -213,7 +208,10 @@ class ProjektyController extends Controller
      * @throws ReaderNotOpenedException
      */
     public function importKega() {
-        $kegaProjects = collect((new FastExcel)->import('../../excely/KEGA.xlsx'))->filter(function ($record) {
+        $file = request()->file('file');
+        $kega = (new FastExcel)->import($file);
+        return $kega;
+        $kegaProjects = collect((new FastExcel)->import($kega))->filter(function ($record) {
             // vyfiltrujeme iba pracoviska iba univerzity konstantina filozofa v nitre
             return str_contains($record['Vysoká škola'], 'Univerzita Konštantína Filozofa v Nitre');
         })->toArray();
@@ -248,14 +246,16 @@ class ProjektyController extends Controller
      * @throws UnsupportedTypeException
      */
     public function importApvv() {
+        $file = request()->file('file');
+        $apvv = (new FastExcel)->import($file);
         // startrow musi byt 2, pretoze v exceli je defaultne prvy riadok zlozeny z mergenutych cells, co nam pokazi cele formatovanie array, cize zacneme az od druheho
-        $apvvT1 = collect((new FastExcel)->startRow(2)->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->filter(function ($record){
+        $apvvT1 = collect((new FastExcel)->startRow(2)->import($apvv))->filter(function ($record){
             return str_contains($record['Vysoká škola'], 'UKF');
         })->toArray();
         // posledny row je prazdny a je v nom iba sucet vsetkych BV dokopy, cize ho vymazeme z array, aby sa nam lahsie importovalo do db
 
         // v prvom riadku apvv suboru sa na konci nachadza rok, za ktory bola dotacia uvedena, tak ziskane tento riadok a substringom ziskame rok
-        $apvvY = collect((new FastExcel())->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->first();
+        $apvvY = collect((new FastExcel())->import($apvv))->first();
         $apvvYear = Str::substr(key($apvvY), -4);
 
         foreach ($apvvT1 as $item) {
@@ -287,7 +287,7 @@ class ProjektyController extends Controller
             ]);
         }
 
-        $apvvT2 = collect((new FastExcel)->startRow(2)->sheet(2)->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->filter(function ($record){
+        $apvvT2 = collect((new FastExcel)->startRow(2)->sheet(2)->import($apvv))->filter(function ($record){
             return str_contains($record['Vysoká škola'], 'UKF');
         })->toArray();
 
@@ -320,7 +320,7 @@ class ProjektyController extends Controller
             ]);
         }
 
-        $apvvT3 = collect((new FastExcel)->startRow(2)->sheet(3)->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->filter(function ($record){
+        $apvvT3 = collect((new FastExcel)->startRow(2)->sheet(3)->import($apvv))->filter(function ($record){
             return str_contains($record['Vysoká škola'], 'UKF');
         })->toArray();
 
@@ -354,7 +354,7 @@ class ProjektyController extends Controller
             ]);
         }
 
-        $apvvT4 = collect((new FastExcel)->startRow(2)->sheet(4)->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->filter(function ($record){
+        $apvvT4 = collect((new FastExcel)->startRow(2)->sheet(4)->import($apvv))->filter(function ($record){
             return str_contains($record['Vysoká škola'], 'UKF');
         })->toArray();
 
@@ -387,7 +387,7 @@ class ProjektyController extends Controller
             ]);
         }
 
-        $apvvT5 = collect((new FastExcel)->startRow(2)->sheet(5)->import('../../excely/Prehlad_VVSprojekty_2021.xlsx'))->filter(function ($record){
+        $apvvT5 = collect((new FastExcel)->startRow(2)->sheet(5)->import($apvv))->filter(function ($record){
             return str_contains($record['Vysoká škola'], 'UKF');
         })->toArray();
 
@@ -549,24 +549,22 @@ class ProjektyController extends Controller
         return [$vegaResults, $kegaResults, $apvvResults];
     }
 
-    public function manualSynchronizationProjects(Request $request) {
-        $projectId = $request->get('project')[0]['id'];
-        $projectProgramId = $request->get('projectProgram');
-        // ziskanie hodnoty prveho kluca
-        $firstKeyProgram = array_key_first($projectProgramId[0]);
-        $firstKeyValueProgram = $projectProgramId[0][$firstKeyProgram];
-        // ziska nazov prveho kluca a vymaze z neho prve dve chars, ktore su vzdy "id".. aby sme vedeli, do ktoreho typu projektu zapisat id
-        $projectType = substr(array_key_first($projectProgramId[0]),2);
+        public function manualSynchronizationProjects(Request $request) {
+            $projectId = $request->get('project')[0]['id'];
+            $projectProgramId = $request->get('projectProgram');
+            // ziskanie hodnoty prveho kluca
+            $firstKeyProgram = array_key_first($projectProgramId[0]);
+            $firstKeyValueProgram = $projectProgramId[0][$firstKeyProgram];
+            // ziska nazov prveho kluca a vymaze z neho prve dve chars, ktore su vzdy "id".. aby sme vedeli, do ktoreho typu projektu zapisat id
+            $projectType = substr(array_key_first($projectProgramId[0]),2);
+            DB::table('pro_projekt')
+                ->where('typ', '=', $projectType)
+                ->update([
+                    'pro_projekt.id_program_projekt' => $firstKeyValueProgram
+                ]);
 
-
-        $affected = DB::table('pro_projekt')
-            ->where('typ', '=', $projectType)
-            ->update([
-                'pro_projekt.id_program_projekt' => $firstKeyValueProgram
-            ]);
-
-        return response("Success", 200);
-    }
+            return response("Success", 200);
+        }
 
     public function getAllStatInfo()
     {
@@ -686,63 +684,59 @@ class ProjektyController extends Controller
     public function getShareByAuthors()
     {
         $records = $this->getAllStatInfo();
+        $authorShares = [];
 
-        $authorShares = []; // Inicializujeme prázdne pole pre uchovávanie informácií o zdieľaní autorov
-
-        // Prechádzame všetky záznamy
         foreach ($records as $record) {
-            $authorName = $record->cele_meno; // Získame meno autora
-            $shareAmount = $record->pomer_pridelena_dotacia_bv_podiel; // Získame pridelenej sumy autora
+            $authorName = $record->cele_meno;
+            $shareAmount = $record->pomer_pridelena_dotacia_bv_podiel;
             $year = $record->rok; // Získame rok
 
-            // Ak už máme informácie o tomto autorovi, pridáme pridelenej sumy k existujúcemu záznamu
+            // ak uz existuje info o tomto autorovi, pridame sumy k existujucemu zaznamu
             if (array_key_exists($authorName, $authorShares)) {
-                // Ak už máme informácie o tomto roku pre daného autora, pridáme pridelenej sumy k existujúcemu záznamu
+                // ak uz existuje  info o tomto roku pre daneho autora, pridame sumu k existujucemu zaznamu
                 if (array_key_exists($year, $authorShares[$authorName])) {
                     $authorShares[$authorName][$year] += $shareAmount;
-                } else { // Ak nemáme ešte informácie o tomto roku pre daného autora, vytvoríme nový záznam pre rok
+                } else { // ak neexistuje info o tomto roku pre daneho autora, vytvorime novy zaznam pre rok
                     $authorShares[$authorName][$year] = $shareAmount;
                 }
-            } else { // Ak nemáme ešte informácie o tomto autorovi, vytvoríme nový záznam pre autora aj rok
+            } else { // ak este nemame info o tomto autorovi, vytvorime nový zaznam pre autora aj rok
                 $authorShares[$authorName] = [$year => $shareAmount];
             }
         }
 
-        // Vrátime zdieľané sumy autorov
         return $authorShares;
     }
 
-    public function getShareByCategoryT()
-    {
-        $records = $this->getAllStatInfo();
+        public function getShareByCategoryT()
+        {
+            $records = $this->getAllStatInfo();
 
 
-        $apvvRecords = [];
-        foreach ($records as $record) {
-            if ($record->typ == "apvv") {
-                $apvvRecords[] = $record;
+            $apvvRecords = [];
+            foreach ($records as $record) {
+                if ($record->typ == "apvv") {
+                    $apvvRecords[] = $record;
+                }
+                else continue;
             }
-            else continue;
+
+            foreach ($apvvRecords as $record) {
+                $category = $record->kategoria;
+                $year = $record->rok;
+                $pridelenaDotacia = $record->pridelena_dotacia_bv;
+
+                if (!isset($sumByCategoryAndYear[$year][$category])) {
+                    $sumByCategoryAndYear[$year][$category] = 0;
+                }
+
+                $sumByCategoryAndYear[$year][$category] += $pridelenaDotacia;
+                foreach ($sumByCategoryAndYear as &$sumByYear) {
+                    ksort($sumByYear);
+                }
+            }
+
+            return $sumByCategoryAndYear;
         }
-
-        foreach ($apvvRecords as $record) {
-            $category = $record->kategoria;
-            $year = $record->rok;
-            $pridelenaDotacia = $record->pridelena_dotacia_bv;
-
-            if (!isset($sumByCategoryAndYear[$year][$category])) {
-                $sumByCategoryAndYear[$year][$category] = 0;
-            }
-
-            $sumByCategoryAndYear[$year][$category] += $pridelenaDotacia;
-            foreach ($sumByCategoryAndYear as &$sumByYear) {
-                ksort($sumByYear);
-            }
-        }
-
-        return $sumByCategoryAndYear;
-
-    }
 
 
 

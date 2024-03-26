@@ -41,7 +41,7 @@ export default {
       { title: 'Synchronizácia projektov', icon: 'mdi-sync', link: 'projektySynchronizacia' },
       { title: 'Publikácie', icon: 'mdi-file-document-multiple-outline', link: 'publications' },
       { title: 'Štatistiky', icon: 'mdi-chart-bar', link: 'statistics' },
-      { title: 'Import', icon: 'mdi-import', link: 'importYear' },
+      { title: 'Import', icon: 'mdi-import', link: 'import' },
       { title: 'Logout', icon: 'mdi-logout', link: 'logout' },
     ],
   }),

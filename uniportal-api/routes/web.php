@@ -43,35 +43,32 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 $router->post('/login', 'UserController@login');
 
 $router->post('/register', 'UserController@register');
-$router->get('/ripUsers', 'UserController@ripUsers');
 
-$router->get('/projects', 'ProjektyController@getProjects');
-$router->get('/projects/synced', 'ProjektyController@getProjectsSynced');
-Route::post('/import/projects', 'ProjektyController@importProjekty');
-$router->get('/projectsNonSynchronized', 'ProjektyController@getProjectsNotSynchronized');
+$router->get('/projects', 'ProjectsController@getProjects');
+$router->get('/projects/synced', 'ProjectsController@getProjectsSynced');
+Route::post('/import/projects', 'ProjectsController@importProjekty');
+$router->get('/projectsNonSynchronized', 'ProjectsController@getProjectsNotSynchronized');
 
+$router->get('/projects/vega', 'ProjectsController@getProjectsVega');
+$router->get('/projects/kega', 'ProjectsController@getProjectsKega');
+$router->get('/projects/apvv', 'ProjectsController@getProjectsApvv');
 
-$router->get('/projects/vega', 'ProjektyController@getProjectsVega');
-$router->get('/projects/kega', 'ProjektyController@getProjectsKega');
-$router->get('/projects/apvv', 'ProjektyController@getProjectsApvv');
-$router->get('/projects/sync', 'ProjektyController@synchronizeProjects');
+$router->get('/vega', 'ProjectsController@getVega');
+Route::post('/import/vega', 'ProjectsController@importVega');
 
-$router->get('/vega', 'ProjektyController@getVega');
-$router->get('/import/vega', 'ProjektyController@importVega');
+$router->get('/kega', 'ProjectsController@getKega');
+Route::post('/import/kega', 'ProjectsController@importKega');
 
-$router->get('/kega', 'ProjektyController@getKega');
-$router->get('/import/kega', 'ProjektyController@importKega');
+$router->get('/apvv', 'ProjectsController@getApvv');
+Route::post('/import/apvv', 'ProjectsController@importApvv');
 
-$router->get('/apvv', 'ProjektyController@getApvv');
-$router->get('/import/apvv', 'ProjektyController@importApvv');
+$router->get('/import/synchronize', 'ProjectsController@synchronizeProjects');
+$router->post('/import/synchronize/manual', 'ProjectsController@manualSynchronizationProjects');
 
-$router->get('/import/synchronize', 'ProjektyController@synchronizeProjects');
-$router->post('/import/synchronize/manual', 'ProjektyController@manualSynchronizationProjects');
+$router->get('/publications', 'PublicationsController@getPublikacie');
+Route::post('/import/publications', 'PublicationsController@importPublikacie');
 
-$router->get('/publications', 'PublikacieController@getPublikacie');
-$router->get('/import/publications', 'PublikacieController@importPublikacie');
-
-$router->get('/statistics/all', 'ProjektyController@getAllStatInfo');
-$router->get('/statistics/faculty', 'ProjektyController@getShareByFaculty');
-$router->get('/statistics/author', 'ProjektyController@getShareByAuthors');
-$router->get('/statistics/TCategory', 'ProjektyController@getShareByCategoryT');
+$router->get('/statistics/all', 'ProjectsController@getAllStatInfo');
+$router->get('/statistics/faculty', 'ProjectsController@getShareByFaculty');
+$router->get('/statistics/author', 'ProjectsController@getShareByAuthors');
+$router->get('/statistics/TCategory', 'ProjectsController@getShareByCategoryT');
